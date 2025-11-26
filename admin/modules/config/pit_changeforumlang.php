@@ -47,18 +47,17 @@ function pit_changeforumlang_show_form()
 
     $languages = array();
 
-    $plugin_dir = MYBB_ROOT . 'inc/plugins/';
-    $language_dir = $plugin_dir . 'pit_changeforumlang_languages/';
-    if (!is_dir($language_dir)) {
-        @mkdir($language_dir, 0755, true);
+    $plugin_languages_dir = MYBB_ROOT . 'inc/plugins/pit_changeforumlang_languages/';
+    if (!is_dir($plugin_languages_dir)) {
+        @mkdir($plugin_languages_dir, 0755, true);
     }
 
     $languagepacks = $lang->get_languages();
 
-    if (is_dir($language_dir)) {
-        $folders = scandir($language_dir);
+    if (is_dir($plugin_languages_dir)) {
+        $folders = scandir($plugin_languages_dir);
         foreach ($folders as $folder) {
-            if ($folder != '.' && $folder != '..' && is_dir($language_dir . $folder)) {
+            if ($folder != '.' && $folder != '..' && is_dir($plugin_languages_dir . $folder)) {
                 if (array_key_exists($folder, $languagepacks)) {
                     $languages[$folder] = $languagepacks[$folder];
                 }
@@ -123,7 +122,8 @@ function pit_changeforumlang_preconfirm()
 
     $selected_language = $mybb->get_input('selected_language', MyBB::INPUT_STRING);
     $update_bblang = $mybb->get_input('update_bblang', MyBB::INPUT_STRING) == 'yes' ? true : false;
-    $selected_language_dir = MYBB_ROOT . 'inc/plugins/pit_changeforumlang_languages/' . $selected_language . '/';
+    $plugin_languages_dir = MYBB_ROOT . 'inc/plugins/pit_changeforumlang_languages/';
+    $selected_language_dir = $plugin_languages_dir . $selected_language . '/';
 
     if (!is_dir($selected_language_dir)) {
         flash_message($lang->pit_changeforumlang_selected_lang_does_not_exist . htmlspecialchars_uni($selected_language), "error");
@@ -141,7 +141,18 @@ function pit_changeforumlang_preconfirm()
         }
     }
 
-    echo "<p>{$lang->pit_changeforumlang_check_file_status}...</p>
+    $compatibility_msg = $lang->pit_changeforumlang_selected_may_not_compatible;
+    $langinfo_file_path = $plugin_languages_dir . $selected_language . '.php';
+    if(is_file($langinfo_file_path)) {
+        require $langinfo_file_path;
+        if ($mybb->version_code == $langinfo['version']) {
+            $compatibility_msg = $lang->pit_changeforumlang_selected_fully_compatible;
+        } else if ($mybb->version_code > $langinfo['version']) { 
+            $compatibility_msg = $lang->pit_changeforumlang_selected_is_lower_version;
+        }
+    }
+    echo "<p>{$compatibility_msg}</p>
+        <p>{$lang->pit_changeforumlang_check_file_status}...</p>
             <ul>";
 
     foreach ($should_exists_file as $filename => $item) {
@@ -271,7 +282,7 @@ function pit_changeforumlang_settings_xml_reader($filename, $file_path)
 {
     global $db;
 
-    if (!file_exists($file_path)) {
+    if (!is_file($file_path)) {
         return array('error' => 'File not found');
     }
 
@@ -357,7 +368,7 @@ function pit_changeforumlang_settings_xml_reader($filename, $file_path)
 function pit_changeforumlang_tasks_xml_reader($filename, $file_path)
 {
     global $db;
-    if (!file_exists($file_path)) {
+    if (!is_file($file_path)) {
         return array('error' => 'File not found');
     }
 
@@ -409,7 +420,7 @@ function pit_changeforumlang_tasks_xml_reader($filename, $file_path)
 function pit_changeforumlang_usergroups_xml_reader($filename, $file_path)
 {
     global $db;
-    if (!file_exists($file_path)) {
+    if (!is_file($file_path)) {
         return array('error' => 'File not found');
     }
 
@@ -464,7 +475,7 @@ function pit_changeforumlang_usergroups_xml_reader($filename, $file_path)
 function pit_changeforumlang_adminviews_xml_reader($filename, $file_path)
 {
     global $db;
-    if (!file_exists($file_path)) {
+    if (!is_file($file_path)) {
         return array('error' => 'File not found');
     }
 
