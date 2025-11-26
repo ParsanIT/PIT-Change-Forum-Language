@@ -17,3 +17,5 @@ $l['pit_changeforumlang_error_occurred'] = 'متاسفانه مشکلاتی رخ
 $l['pit_changeforumlang_found_self_duplicated'] = 'داده‌های تکراری وارد دیتابیس شده است.';
 $l['pit_changeforumlang_found_settings_duplicated'] = 'نام تکراری در بخش تنظیمات دیده می‌شود، بمنظور جلوگیری از تغییرات نادرست، فرآیند متوقف شد.';
 $l['pit_changeforumlang_finish'] = "زبان انجمن با موفقیت به {1} تغییر کرد. ممکن است مشاهده تغییرات نیاز به تازه‌سازی(رفرش) صفحه داشته باشد.";
+$l['pit_changeforumlang_update_bblang'] = "تغییر زبان انجمن";
+$l['pit_changeforumlang_update_bblang_desc'] = "آیا میخواهید بعد از انجام فرآیند، زبان اصلی انجمن برای کاربران هم به زبان انتخابی تغییر کند؟<br />زبان نمایشی کنترل‌پنل مدیرکل بلا استثنا تغییر خواهد کرد.";

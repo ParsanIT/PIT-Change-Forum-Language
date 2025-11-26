@@ -79,6 +79,12 @@ function pit_changeforumlang_show_form()
         $form->generate_select_box('selected_language', $languages, '', array('id' => 'selected_language')),
         'selected_language'
     );
+    $form_container->output_row(
+        $lang->pit_changeforumlang_update_bblang,
+        $lang->pit_changeforumlang_update_bblang_desc,
+        $form->generate_yes_no_radio('update_bblang', $languages, '', array('id' => 'update_bblang')),
+        'update_bblang'
+    );
 
     $form_container->end();
 
@@ -116,10 +122,11 @@ function pit_changeforumlang_preconfirm()
     );
 
     $selected_language = $mybb->get_input('selected_language', MyBB::INPUT_STRING);
+    $update_bblang = $mybb->get_input('update_bblang', MyBB::INPUT_STRING) == 'yes' ? true : false;
     $selected_language_dir = MYBB_ROOT . 'inc/plugins/pit_changeforumlang_languages/' . $selected_language . '/';
 
     if (!is_dir($selected_language_dir)) {
-        flash_message($lang->pit_changeforumlang_selected_lang_does_not_exist . htmlspecialchars($selected_language), "error");
+        flash_message($lang->pit_changeforumlang_selected_lang_does_not_exist . htmlspecialchars_uni($selected_language), "error");
         admin_redirect("index.php?module=config-pit-changeforumlang");
         return false;
     }
@@ -166,12 +173,11 @@ function pit_changeforumlang_preconfirm()
         }
     }
 
-
-
     pit_changeforumlang_message($lang->pit_changeforumlang_ready_to_apply, 'success');
 
     $form = new Form("index.php?module=config-pit-changeforumlang&amp;action=save", "post");
     echo $form->generate_hidden_field('selected_language', $selected_language);
+    echo $form->generate_hidden_field('update_bblang', $update_bblang);
     update_admin_session('should_exists_file', $should_exists_file);
 
     $buttons[] = $form->generate_submit_button($lang->pit_changeforumlang_apply);
@@ -192,6 +198,9 @@ function pit_changeforumlang_save_settings()
 
     verify_post_check($mybb->get_input('my_post_key'));
     $selected_language = $mybb->get_input('selected_language', MyBB::INPUT_STRING);
+    $update_bblang = $mybb->get_input('update_bblang', MyBB::INPUT_BOOL);
+    $languagepacks = $lang->get_languages();
+
     $should_exists_file = '';
     if (isset($admin_session['data']['should_exists_file']) && $admin_session['data']['should_exists_file']) {
         $should_exists_file = $admin_session['data']['should_exists_file'];
@@ -234,13 +243,14 @@ function pit_changeforumlang_save_settings()
 
     $selected_language = isset($selected_language) ? $selected_language : 'english';
 
-    $db->update_query('settings', array('value' => $db->escape_string($selected_language)), "name = 'bblanguage' OR name = 'cplanguage'");
-    $lang->set_language($selected_language, "user");
+    $condition = $update_bblang ? "OR name = 'bblanguage'" : "";
+    $db->update_query('settings', array('value' => $db->escape_string($selected_language)), "name = 'cplanguage' {$condition}");
     $lang->set_language($selected_language, "admin");
-    rebuild_settings();
-    $languagepacks = $lang->get_languages();
+    if ($update_bblang) $lang->set_language($selected_language, "user");
 
-    flash_message($lang->sprintf($lang->pit_changeforumlang_finish, htmlspecialchars($languagepacks[$selected_language])), "success");
+    rebuild_settings();
+
+    flash_message($lang->sprintf($lang->pit_changeforumlang_finish, htmlspecialchars_uni($languagepacks[$selected_language])), "success");
     admin_redirect("index.php?module=config-pit-changeforumlang");
 }
 
