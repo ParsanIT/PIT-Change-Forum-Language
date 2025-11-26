@@ -1,0 +1,19 @@
+<?php
+$l['pit_changeforumlang_pl_title'] = "تغییر زبان انجمن PIT";
+$l['pit_changeforumlang_pl_desc'] = "زبان بخش‌های مختلفی را که نیاز به تغییر در پایگاه داده دارند، بدون نیاز به انجام فرآیند ارتقا یا نصب مجدد، تغییر دهید.";
+$l['pit_changeforumlang_header'] = "تغییر زبان انجمن";
+$l['pit_changeforumlang_help'] = "راهنما";
+$l['pit_changeforumlang_help_desc'] = "برای عملکرد مناسب، علاوه بر اضافه کردن فایل‌های xml برای ترجمه بخش‌های مختلف در inc/plugins/pit_changeforumlang_languages، بسته زبان متناظر نیز باید در انجمن بارگذاری شود.";
+$l['pit_changeforumlang_select_lang'] = 'زبان مورد نظر';
+$l['pit_changeforumlang_select_lang_desc'] = "زبان مورد نظر برای انجمن را انتخاب کنید";
+$l['pit_changeforumlang_check_requirement'] = "بررسی نیازمندی‌ها";
+$l['pit_changeforumlang_selected_lang_does_not_exist'] = "پوشه زبان انتخاب شده وجود ندارد: ";
+$l['pit_changeforumlang_check_file_status'] = "بررسی وضعیت فایل‌ها";
+$l['pit_changeforumlang_some_file_does_not_exist'] = "برخی فایل‌های زبانی موجود نیستند!";
+$l['pit_changeforumlang_issue_on_read_xml'] = "مشکلی در خواندن برخی از فایل‌های زبان وجود داشت!";
+$l['pit_changeforumlang_ready_to_apply'] = 'آماده اجرای فرآیند تغییر زبان هستیم.';
+$l['pit_changeforumlang_apply'] = "اعمال تغییرات";
+$l['pit_changeforumlang_error_occurred'] = 'متاسفانه مشکلاتی رخ داده است.';
+$l['pit_changeforumlang_found_self_duplicated'] = 'داده‌های تکراری وارد دیتابیس شده است.';
+$l['pit_changeforumlang_found_settings_duplicated'] = 'نام تکراری در بخش تنظیمات دیده می‌شود، بمنظور جلوگیری از تغییرات نادرست، فرآیند متوقف شد.';
+$l['pit_changeforumlang_finish'] = "زبان انجمن با موفقیت به {1} تغییر کرد. ممکن است مشاهده تغییرات نیاز به تازه‌سازی(رفرش) صفحه داشته باشد.";

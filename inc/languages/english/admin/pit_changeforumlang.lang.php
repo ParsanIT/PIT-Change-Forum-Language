@@ -1,0 +1,19 @@
+<?php
+$l['pit_changeforumlang_pl_title'] = "PIT Change Forum Language";
+$l['pit_changeforumlang_pl_desc'] = "Change the language of various sections that require changes to the database, without having to perform an upgrade or reinstallation process.";
+$l['pit_changeforumlang_header'] = "Change Forum Language";
+$l['pit_changeforumlang_help'] = "Guide";
+$l['pit_changeforumlang_help_desc'] = "For proper operation, in addition to adding the xml files for translating the various sections in inc/plugins/pit_changeforumlang_languages, the corresponding language pack must also be uploaded to the forum.";
+$l['pit_changeforumlang_select_lang'] = "Select Language";
+$l['pit_changeforumlang_select_lang_desc'] = "Please choose your desired language for your forum.";
+$l['pit_changeforumlang_check_requirement'] = "Check Requirements";
+$l['pit_changeforumlang_selected_lang_does_not_exist'] = "The directory of selected language does not exist: ";
+$l['pit_changeforumlang_check_file_status'] = "Checking the status of files";
+$l['pit_changeforumlang_some_file_does_not_exist'] = "Some language files are missing!";
+$l['pit_changeforumlang_issue_on_read_xml'] = "There was a problem reading some language files!";
+$l['pit_changeforumlang_ready_to_apply'] = 'We are ready to implement the change language process.';
+$l['pit_changeforumlang_apply'] = "Apply changes";
+$l['pit_changeforumlang_error_occurred'] = "Unfortunately, there have been problems.";
+$l['pit_changeforumlang_found_self_duplicated'] = "Duplicate data has been entered into the database.";
+$l['pit_changeforumlang_found_settings_duplicated'] = 'Duplicate name is seen in the settings section, the process was stopped to prevent incorrect changes.';
+$l['pit_changeforumlang_finish'] = "The forum language has been successfully changed to {1}. You may need to refresh the page to see the changes.";
