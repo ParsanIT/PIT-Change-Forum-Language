@@ -13,11 +13,11 @@ Now, with this plugin, you can do this without having to upgrade or reinstall, a
 
 ## How to create the necessary language files?
 
-Currently, the necessary language files are named settings.xml, tasks.xml, usergroups.xml, adminviews.xml, which are available in the install directory. This is to speed up and facilitate the work of various MyBB communities around the world. If you have them ready, you can include them in the plugin and use them easily.
+Currently, the necessary language files are named settings.xml, tasks.xml, usergroups.xml, adminviews.xml, which are available in the install directory, and a php file that contain language pack info like MyBB language pack info files. This is to speed up and facilitate the work of various MyBB communities around the world. If you have them ready, you can include them in the plugin and use them easily.
 
 ## How to add a language:
 
-In the inc/plugins/pit_changeforumlang_languages ​​folder, create a folder with the code/name of your language and place the translated xml files in it.(According to the persian language template included in the package)
+In the inc/plugins/pit_changeforumlang_languages ​​directory, create a folder with your language code/name and place the translated xml files in it, and also create a language information file with the same language code/name in php format next to it. (According to the Persian language template included in the package)
 
 For correct and logical functioning, the corresponding MyBB language pack must also be present in the forum so that you can see it for selection in the plugin. (It certainly does not make sense to have the settings section in Russian in a ACP with Chinese language -- however, we may change this if users request and need it.)
 
@@ -38,10 +38,10 @@ For correct and logical functioning, the corresponding MyBB language pack must a
 
 ## چگونه فایل های زبانی لازم را ایجاد کنیم؟
 
-در حال حاضر فایل‌های زبانی لازم با نام‌های settings.xml ، tasks.xml ، usergroups.xml، adminviews.xml هستند که در دایرکتوری install موجود می‌باشند. اینکار به منظور سرعت بخشیدن و راحتی جوامع مختلف MyBB در سراسر دنیا می‌باشد. اگر آنها را آماده دارید میتوانید در پلاگین بگنجانید و به راحتی استفاده کنید.
+در حال حاضر فایل‌های زبانی لازم با نام‌های settings.xml ، tasks.xml ، usergroups.xml، adminviews.xml هستند که در دایرکتوری install موجود هستند، و یک فایل php که حاوی اطلاعات بسته زبان مانند فایل‌های اطلاعات بسته زبان MyBB است. اینکار به منظور سرعت بخشیدن و راحتی جوامع مختلف MyBB در سراسر دنیا می‌باشد. اگر آنها را آماده دارید میتوانید در پلاگین بگنجانید و به راحتی استفاده کنید.
 
 ## نحوه اضافه کردن زبان:
 
-در پوشه inc/plugins/pit_changeforumlang_languages، پوشه‌ای با کد/نام زبان خود ایجاد کنید و فایل‌های xml ترجمه شده را در آن قرار دهید.(مطابق الگو زبان persian موجود در بسته)
+در دایرکتوری inc/plugins/pit_changeforumlang_languages، پوشه‌ای با کد/نام زبان خود ایجاد کنید و فایل‌های xml ترجمه شده را در آن قرار دهید و همچنین در کنار آن فایل اطلاعات زبانی به همان کد/نام زبان به فرمت php ایجاد کنید.(مطابق الگو زبان persian موجود در بسته)
 
 برای عملکرد صحیح و منطقی، بسته زبان MyBB متناظر با آن‌هم باید در انجمن موجود باشد تا بتوانید آن را برای انتخاب در افزونه مشاهده کنید. (مطمئناً منطقی نیست که بخش تنظیمات به زبان روسی در یک ACP با زبان چینی باشد -- با این حال، در صورت درخواست و نیاز کاربران، ممکن است این را تغییر دهیم.)
