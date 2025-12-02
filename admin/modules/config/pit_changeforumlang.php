@@ -114,10 +114,10 @@ function pit_changeforumlang_preconfirm()
     }
 
     $should_exists_file = array(
-        "settings.xml" => array("filename" => "settings.xml", "isexist" => false),
-        "tasks.xml" => array("filename" => "tasks.xml", "isexist" => false),
-        "usergroups.xml" => array("filename" => "usergroups.xml", "isexist" => false),
-        "adminviews.xml" => array("filename" => "adminviews.xml", "isexist" => false),
+        "settings.xml" => array("filename" => "settings.xml", "isexist" => false, "isselected" => false),
+        "tasks.xml" => array("filename" => "tasks.xml", "isexist" => false, "isselected" => false),
+        "usergroups.xml" => array("filename" => "usergroups.xml", "isexist" => false, "isselected" => false),
+        "adminviews.xml" => array("filename" => "adminviews.xml", "isexist" => false, "isselected" => false),
     );
 
     $selected_language = $mybb->get_input('selected_language', MyBB::INPUT_STRING);
@@ -131,9 +131,11 @@ function pit_changeforumlang_preconfirm()
         return false;
     }
 
+    $has_no_file = true;
     // $some_file_is_missing = false;
     foreach ($should_exists_file as $filename => $item) {
         if (is_file($selected_language_dir . $filename)) {
+            $has_no_file = false;
             $should_exists_file[$filename]["isexist"] = true;
             $should_exists_file[$filename]["path"] = $selected_language_dir . $filename;
         } else {
@@ -141,30 +143,22 @@ function pit_changeforumlang_preconfirm()
         }
     }
 
+    if ($has_no_file) {
+        flash_message($lang->pit_changeforumlang_has_no_file . htmlspecialchars_uni($selected_language), "error");
+        admin_redirect("index.php?module=config-pit-changeforumlang");
+        return false;
+    }
+
     $compatibility_msg = $lang->pit_changeforumlang_selected_may_not_compatible;
     $langinfo_file_path = $plugin_languages_dir . $selected_language . '.php';
-    if(is_file($langinfo_file_path)) {
+    if (is_file($langinfo_file_path)) {
         require $langinfo_file_path;
         if ($mybb->version_code == $langinfo['version']) {
             $compatibility_msg = $lang->pit_changeforumlang_selected_fully_compatible;
-        } else if ($mybb->version_code > $langinfo['version']) { 
+        } else if ($mybb->version_code > $langinfo['version']) {
             $compatibility_msg = $lang->pit_changeforumlang_selected_is_lower_version;
         }
     }
-    echo "<p>{$compatibility_msg}</p>
-        <p>{$lang->pit_changeforumlang_check_file_status}...</p>
-            <ul>";
-
-    foreach ($should_exists_file as $filename => $item) {
-        $icon_url = $mybb->settings['bburl'] . '/admin/styles/default/images/icons/';
-        if ($item["isexist"]) $icon_url .= 'success.png';
-        else {
-            $icon_url .= 'error.png';
-            // $some_file_is_missing = true;
-        }
-        echo "<li style=\"list-style: none;\"><img src=\"{$icon_url}\"> {$filename}</li>";
-    }
-    echo '</ul>';
 
     /* if ($some_file_is_missing == true) {
         pit_changeforumlang_message($lang->pit_changeforumlang_some_file_does_not_exist, 'error');
@@ -189,6 +183,27 @@ function pit_changeforumlang_preconfirm()
     $form = new Form("index.php?module=config-pit-changeforumlang&amp;action=save", "post");
     echo $form->generate_hidden_field('selected_language', $selected_language);
     echo $form->generate_hidden_field('update_bblang', $update_bblang);
+
+    echo "<p>{$compatibility_msg}</p>
+        <p>{$lang->pit_changeforumlang_check_file_status}...</p>
+        <ul>";
+
+    foreach ($should_exists_file as $filename => $item) {
+        $icon_url = $mybb->settings['bburl'] . '/admin/styles/default/images/icons/';
+        if ($item["isexist"]) $icon_url .= 'success.png';
+        else $icon_url .= 'error.png';
+
+        $checked = $item["isexist"] == true ? 'checked' : '';
+        $disabled = $item["isexist"] == true ? '' : 'disabled';
+        echo "<li style=\"list-style: none;\">
+                <label for=\"languagefiles_{$filename}\">
+                    <input type=\"checkbox\" name=\"languagefiles[]\" id=\"languagefiles_{$filename}\" value=\"{$filename}\" {$checked} {$disabled}>
+                    {$filename} <img src=\"{$icon_url}\">
+                </label>
+            </li>";
+    }
+    echo '</ul>';
+
     update_admin_session('should_exists_file', $should_exists_file);
 
     $buttons[] = $form->generate_submit_button($lang->pit_changeforumlang_apply);
@@ -210,6 +225,7 @@ function pit_changeforumlang_save_settings()
     verify_post_check($mybb->get_input('my_post_key'));
     $selected_language = $mybb->get_input('selected_language', MyBB::INPUT_STRING);
     $update_bblang = $mybb->get_input('update_bblang', MyBB::INPUT_BOOL);
+    $selectedlanguagefiles = $mybb->get_input('languagefiles', MyBB::INPUT_ARRAY);
     $languagepacks = $lang->get_languages();
 
     $should_exists_file = '';
@@ -224,6 +240,13 @@ function pit_changeforumlang_save_settings()
         return false;
     }
 
+    foreach ($should_exists_file as $filename => $item) {
+        if ($item['isexist']) {
+            $isselected = in_array($filename, $selectedlanguagefiles);
+            $should_exists_file[$filename]['isselected'] = $isselected;
+        }
+    }
+
     $query = $db->query("SELECT kind, identifier, COUNT(id) FROM `mybb_pit_changeforumlang_data` GROUP BY kind, identifier HAVING COUNT(id) > 1;");
     $count_result = $db->num_rows($query);
     if ($count_result > 0) {
@@ -232,7 +255,7 @@ function pit_changeforumlang_save_settings()
         return false;
     }
 
-    if ($should_exists_file['settings.xml']['isexist']) {
+    if ($should_exists_file['settings.xml']['isselected']) {
         $query2 = $db->query("SELECT name, COUNT(sid) FROM `mybb_settings` GROUP BY name HAVING COUNT(sid) > 1;");
         $count_result = $db->num_rows($query2);
         if ($count_result > 0) {
@@ -243,7 +266,7 @@ function pit_changeforumlang_save_settings()
     }
 
     foreach ($should_exists_file as $filename => $item) {
-        if ($item['isexist'] == true) {
+        if ($item['isselected'] == true) {
             $data = pit_changeforumlang_apply_controller($filename);
             if (isset($data->error)) {
                 pit_changeforumlang_message($lang->pit_changeforumlang_error_occurred, 'error');

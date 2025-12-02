@@ -10,6 +10,7 @@ $l['pit_changeforumlang_check_requirement'] = "بررسی نیازمندی‌ه�
 $l['pit_changeforumlang_selected_lang_does_not_exist'] = "پوشه زبان انتخاب شده وجود ندارد: ";
 $l['pit_changeforumlang_check_file_status'] = "بررسی وضعیت فایل‌ها";
 $l['pit_changeforumlang_some_file_does_not_exist'] = "برخی فایل‌های زبانی موجود نیستند!";
+$l['pit_changeforumlang_has_no_file'] = "هیچ فایل زبانی وجود ندارد!";
 $l['pit_changeforumlang_issue_on_read_xml'] = "مشکلی در خواندن برخی از فایل‌های زبان وجود داشت!";
 $l['pit_changeforumlang_ready_to_apply'] = 'آماده اجرای فرآیند تغییر زبان هستیم.';
 $l['pit_changeforumlang_apply'] = "اعمال تغییرات";

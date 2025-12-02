@@ -10,6 +10,7 @@ $l['pit_changeforumlang_check_requirement'] = "Check Requirements";
 $l['pit_changeforumlang_selected_lang_does_not_exist'] = "The directory of selected language does not exist: ";
 $l['pit_changeforumlang_check_file_status'] = "Checking the status of files";
 $l['pit_changeforumlang_some_file_does_not_exist'] = "Some language files are missing!";
+$l['pit_changeforumlang_has_no_file'] = "There is no language file!";
 $l['pit_changeforumlang_issue_on_read_xml'] = "There was a problem reading some language files!";
 $l['pit_changeforumlang_ready_to_apply'] = 'We are ready to implement the change language process.';
 $l['pit_changeforumlang_apply'] = "Apply changes";
