@@ -138,8 +138,18 @@ function pit_changeforumlang_message($message, $type = '')
             <p><em>{$message}</em></p>
         </div>";
 }
+
 function pit_changeforumlang_starts_with($startString, $string)
 {
     $len = strlen($startString);
     return (substr($string, 0, $len) === $startString);
+}
+
+function pit_changeforumlang_ends_with($endString, $string)
+{
+    $len = strlen($endString);
+    if ($len == 0) {
+        return true;
+    }
+    return (substr($string, -$len) === $endString);
 }

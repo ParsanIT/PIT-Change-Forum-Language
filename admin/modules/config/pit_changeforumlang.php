@@ -31,6 +31,211 @@ function pit_changeforumlang_admin_module()
     }
 }
 
+class LanguageFileManager
+{
+    private $file_path;
+    private $original_perms;
+
+    public function __construct($file_path)
+    {
+        $this->file_path = $file_path;
+    }
+
+    private function ensureWritable()
+    {
+        if (!file_exists($this->file_path) || !is_file($this->file_path)) {
+            throw new Exception("The file does not exist: " . $this->file_path);
+        }
+
+        if (is_writable($this->file_path)) {
+            return true;
+        }
+
+        $original_perms = fileperms($this->file_path);
+        if (chmod($this->file_path, 0644) && is_writable($this->file_path)) {
+            $this->original_perms = $original_perms;
+            return true;
+        }
+
+        throw new Exception("The file is not writable: " . $this->file_path);
+    }
+
+    private function restorePermissions()
+    {
+        if (isset($this->original_perms)) {
+            chmod($this->file_path, $this->original_perms);
+        }
+    }
+
+    private function escapeString($string)
+    {
+        // return substr(json_encode($string, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 1, -1);
+        $replacements = [
+            "\\" => "\\\\",
+            "\"" => "\\\"",
+        ];
+
+        return trim(strtr($string, $replacements));
+    }
+
+    private function findLineIndex($file_content_lines, $searchfor, $findlast_position = false)
+    {
+        if (!is_array($file_content_lines) && is_string($file_content_lines)) {
+            $file_content_lines = explode("\n", $file_content_lines);
+        }
+
+        $last_position = false;
+        foreach ($file_content_lines as $index => $line) {
+            if (strrpos($line, $searchfor) !== false) {
+                if (!$findlast_position) {
+                    return $index; // first position
+                }
+                $last_position = $index;
+            }
+        }
+
+        return $last_position;
+    }
+
+    private function appendTo($file_content, $content, $searchfor = null, $before = false, $to_another_line = false, $findlast_position = false)
+    {
+        if ($searchfor === null || $searchfor === '') {
+            $searchfor = '?>';
+            $before = true;
+            $findlast_position = true;
+        }
+
+        if ($to_another_line) {
+            $file_content_lines = explode("\n", $file_content);
+            $line_index = $this->findLineIndex($file_content_lines, $searchfor, $findlast_position);
+            if ($line_index === false) {
+                array_push($file_content_lines, $content);
+            } else {
+                $insert_at = $line_index + ($before ? 0 : 1);
+                array_splice($file_content_lines, $insert_at, 0, $content);
+            }
+            $file_content = implode("\n", $file_content_lines);
+            return $file_content;
+        }
+
+        $strindex = strrpos($file_content, $searchfor);
+        if ($strindex !== false) {
+            if (!$before) $strindex += strlen($searchfor);
+            return substr($file_content, 0, $strindex) .
+                $content .
+                substr($file_content, $strindex);
+        } else {
+            return $file_content . $content;
+        }
+    }
+
+    public function writePlainText($content, $searchfor = null)
+    {
+        try {
+            $this->ensureWritable();
+
+            $file_content = file_get_contents($this->file_path);
+
+            $content = $this->escapeString($content);
+            $file_content = $this->appendTo($file_content, $content, $searchfor);
+
+            $result = file_put_contents($this->file_path, $file_content);
+
+            $this->restorePermissions();
+
+            return $result !== false;
+        } catch (Exception $e) {
+            error_log("LanguageFileManager Error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function languageKeyExists($key, $file_content = null)
+    {
+        if ($file_content === null) {
+            $file_content = file_get_contents($this->file_path);
+        }
+
+        $patterns = [
+            '/\\$l\[\'' . preg_quote($key, '/') . '\'\]/',
+            '/\\$l\["' . preg_quote($key, '/') . '"\]/',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $file_content)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function writeLanguageKey($key, $value)
+    {
+        try {
+            $this->ensureWritable();
+
+            $file_content = file_get_contents($this->file_path);
+
+            if ($this->languageKeyExists($key, $file_content)) {
+                return false;
+            }
+
+            $content = "\$l[\"{$key}\"] = \"" . $this->escapeString($value) . "\";";
+
+            $file_content = $this->appendTo($file_content, $content, null, false, true);
+
+            $result = file_put_contents($this->file_path, $file_content);
+
+            $this->restorePermissions();
+
+            return $result !== false;
+        } catch (Exception $e) {
+            error_log("LanguageFileManager Error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function writeLanguageKeys($array_of_language_keys)
+    {
+        try {
+            $this->ensureWritable();
+
+            $file_content = file_get_contents($this->file_path);
+
+            foreach ($array_of_language_keys as $gid => $items) {
+                foreach ($items as $key => $value) {
+                    $value = $this->escapeString($value);
+
+                    if (pit_changeforumlang_starts_with('___comment_header_', $key)) {
+                        $value_len = strlen($value);
+                        $content = "\n\n\n/*" . str_repeat('*', $value_len + 12) . "\n *\t" . $value . "\n *" . str_repeat('*', $value_len + 12) . "\n */\n";
+                        $file_content = $this->appendTo($file_content, $content);
+                    } else if (pit_changeforumlang_ends_with('_zins_newline_after', $key)) {
+                        $content = "\n";
+                        $file_content = $this->appendTo($file_content, $content);
+                    } else {
+                        if ($this->languageKeyExists($key, $file_content)) continue;
+
+                        $content = "\$l[\"{$key}\"] = \"" . $value . "\";";
+
+                        $file_content = $this->appendTo($file_content, $content, null, false, true);
+                    }
+                }
+            }
+
+            $result = file_put_contents($this->file_path, $file_content);
+
+            $this->restorePermissions();
+
+            return $result !== false;
+        } catch (Exception $e) {
+            error_log("LanguageFileManager Error: " . $e->getMessage());
+            return false;
+        }
+    }
+}
+
 function pit_changeforumlang_show_form()
 {
     global $lang, $page;
@@ -267,8 +472,8 @@ function pit_changeforumlang_save_settings()
 
     foreach ($should_exists_file as $filename => $item) {
         if ($item['isselected'] == true) {
-            $data = pit_changeforumlang_apply_controller($filename);
-            if (isset($data->error)) {
+            $data = pit_changeforumlang_apply_controller($filename, $selected_language);
+            if (is_array($data) && isset($data->error)) {
                 pit_changeforumlang_message($lang->pit_changeforumlang_error_occurred, 'error');
                 return false;
             }
@@ -365,8 +570,8 @@ function pit_changeforumlang_settings_xml_reader($filename, $file_path)
                 'kind' => 'setting',
                 'identifier' => $db->escape_string($setting_data['identifier']),
                 'name' => $db->escape_string($setting_data['name']),
-                'title' => $db->escape_string($setting_data['title']),
-                'description' => $db->escape_string($setting_data['description']),
+                'title' => $db->escape_string(trim($setting_data['title'])),
+                'description' => $db->escape_string(trim($setting_data['description'])),
                 'extra1' => $db->escape_string($setting_data['optionscode']),
                 'extra2' => $db->escape_string($setting_data['settingvalue']),
                 'language_code' => '',
@@ -380,8 +585,8 @@ function pit_changeforumlang_settings_xml_reader($filename, $file_path)
             'kind' => 'settinggroup',
             'identifier' => $db->escape_string($settinggroup_data['identifier']),
             'name' => $db->escape_string($settinggroup_data['name']),
-            'title' => $db->escape_string($settinggroup_data['title']),
-            'description' => $db->escape_string($settinggroup_data['description']),
+            'title' => $db->escape_string(trim($settinggroup_data['title'])),
+            'description' => $db->escape_string(trim($settinggroup_data['description'])),
             'language_code' => '',
         ));
     }
@@ -432,8 +637,8 @@ function pit_changeforumlang_tasks_xml_reader($filename, $file_path)
             'kind' => 'task',
             'identifier' => $db->escape_string($task_data['identifier']),
             'name' => $db->escape_string($task_data['file']),
-            'title' => $db->escape_string($task_data['title']),
-            'description' => $db->escape_string($task_data['description']),
+            'title' => $db->escape_string(trim($task_data['title'])),
+            'description' => $db->escape_string(trim($task_data['description'])),
             'language_code' => '',
         ));
     }
@@ -486,9 +691,9 @@ function pit_changeforumlang_usergroups_xml_reader($filename, $file_path)
             'kind' => 'usergroup',
             'identifier' => $db->escape_string($usergroup_data['identifier']),
             'name' => $db->escape_string($usergroup_data['gid']),
-            'title' => $db->escape_string($usergroup_data['title']),
-            'description' => $db->escape_string($usergroup_data['description']),
-            'extra1' => $db->escape_string($usergroup_data['usertitle']),
+            'title' => $db->escape_string(trim($usergroup_data['title'])),
+            'description' => $db->escape_string(trim($usergroup_data['description'])),
+            'extra1' => $db->escape_string(trim($usergroup_data['usertitle'])),
             'language_code' => '',
         ));
     }
@@ -537,7 +742,7 @@ function pit_changeforumlang_adminviews_xml_reader($filename, $file_path)
             'kind' => 'adminview',
             'identifier' => $db->escape_string($adminview_data['identifier']),
             'name' => $db->escape_string($adminview_data['vid']),
-            'title' => $db->escape_string($adminview_data['title']),
+            'title' => $db->escape_string(trim($adminview_data['title'])),
             'language_code' => '',
         ));
     }
@@ -545,23 +750,28 @@ function pit_changeforumlang_adminviews_xml_reader($filename, $file_path)
     return $data;
 }
 
-function pit_changeforumlang_apply_controller($filename)
+function pit_changeforumlang_apply_controller($filename, $selected_language)
 {
     if ($filename == 'settings.xml') {
-        return pit_changeforumlang_settings_apply($filename);
+        return pit_changeforumlang_settings_apply($selected_language);
     } else if ($filename == 'tasks.xml') {
-        return pit_changeforumlang_tasks_apply($filename);
+        return pit_changeforumlang_tasks_apply($selected_language);
     } else if ($filename == 'usergroups.xml') {
-        return pit_changeforumlang_usergroups_apply($filename);
+        return pit_changeforumlang_usergroups_apply($selected_language);
     } else if ($filename == 'adminviews.xml') {
-        return pit_changeforumlang_adminviews_apply($filename);
+        return pit_changeforumlang_adminviews_apply($selected_language);
     }
     return array('error' => true);
 }
-function pit_changeforumlang_settings_apply()
+function pit_changeforumlang_settings_apply($selected_language)
 {
     global $db;
     $TABLE_PREFIX = TABLE_PREFIX;
+
+    $lang_manager = new LanguageFileManager(
+        MYBB_ROOT . 'inc/languages/' . $selected_language . '/admin/config_settings.lang.php'
+    );
+    $array_of_language_keys = array();
 
     $query = $db->write_query("SELECT sg.gid, p.id, p.source_filename, p.kind, p.identifier, p.name, p.title, p.description FROM {$TABLE_PREFIX}settinggroups sg
                             LEFT JOIN {$TABLE_PREFIX}pit_changeforumlang_data p 
@@ -572,17 +782,27 @@ function pit_changeforumlang_settings_apply()
                             AND p.id IS NOT NULL");
 
     while ($result = $db->fetch_array($query)) {
-        $db->update_query(
-            "settinggroups",
-            array(
-                "title" => $db->escape_string($result['title']),
-                "description" => $db->escape_string($result['description']),
-            ),
-            "gid = {$result['gid']}"
-        );
+        if ($selected_language === 'english') {
+            $db->update_query(
+                "settinggroups",
+                array(
+                    "title" => $db->escape_string($result['title']),
+                    "description" => $db->escape_string($result['description']),
+                ),
+                "gid = {$result['gid']}"
+            );
+        } else {
+            // $lang_manager->writeLanguageKey('setting_group_' . $result['name'], $result['title']);
+            // $lang_manager->writeLanguageKey('setting_group_' . $result['name'] . '_desc', $result['description']);
+            $array_of_language_keys[$result['gid']] = array();
+            $array_of_language_keys[$result['gid']]['___comment_header_setting_group_' . $result['name']] = $result['name'] . ' settings';
+            $array_of_language_keys[$result['gid']]['setting_group_' . $result['name']] = $result['title'];
+            $array_of_language_keys[$result['gid']]['setting_group_' . $result['name'] . '_desc'] = $result['description'];
+            $array_of_language_keys[$result['gid']]['setting_group_' . $result['name'] . '_zins_newline_after'] = "\n";
+        }
     }
 
-    $query = $db->write_query("SELECT s.sid, s.optionscode, p.id, p.source_filename, p.kind, p.identifier, p.name, p.title, p.description, p.extra1 FROM {$TABLE_PREFIX}settings s
+    $query = $db->write_query("SELECT s.sid, s.gid, s.optionscode, p.id, p.source_filename, p.kind, p.identifier, p.name, p.title, p.description, p.extra1 FROM {$TABLE_PREFIX}settings s
                             LEFT JOIN {$TABLE_PREFIX}pit_changeforumlang_data p 
                                 ON p.kind = 'setting'
                                 AND s.name = p.identifier
@@ -595,16 +815,36 @@ function pit_changeforumlang_settings_apply()
         if (pit_changeforumlang_starts_with('select', $result['optionscode']) && pit_changeforumlang_starts_with('select', $result['extra1'])) $can_update_optionscode = true;
         else if (pit_changeforumlang_starts_with('radio', $result['optionscode']) && pit_changeforumlang_starts_with('radio', $result['extra1'])) $can_update_optionscode = true;
 
+        if ($selected_language === 'english') {
+            $db->update_query(
+                "settings",
+                array(
+                    "title" => $db->escape_string($result['title']),
+                    "description" => $db->escape_string($result['description']),
+                    "optionscode" => $db->escape_string($can_update_optionscode ? $result['extra1'] : $result['optionscode']),
+                ),
+                "sid = {$result['sid']}"
+            );
+        } else {
+            $array_of_language_keys[$result['gid']]['setting_' . $result['name']] = $result['title'];
+            $array_of_language_keys[$result['gid']]['setting_' . $result['name'] . '_desc'] = $result['description'];
+            if ($can_update_optionscode) {
+                $optionscode_array = explode("\n", $result['extra1']);
+                array_shift($optionscode_array); // remove first element (select or radio)
+                foreach ($optionscode_array as $option) {
+                    $option_equel_index = strpos($option, "=");
+                    $option_value = trim(substr($option, 0, $option_equel_index));
+                    $option_title = trim(substr($option, $option_equel_index + 1));
+                    $array_of_language_keys[$result['gid']]['setting_' . $result['name'] . '_' . $option_value] = $option_title;
+                }
+            }
+            $array_of_language_keys[$result['gid']]['setting_' . $result['name'] . '_zins_newline_after'] = "\n";
+        }
+    }
 
-        $db->update_query(
-            "settings",
-            array(
-                "title" => $db->escape_string($result['title']),
-                "description" => $db->escape_string($result['description']),
-                "optionscode" => $db->escape_string($can_update_optionscode ? $result['extra1'] : $result['optionscode']),
-            ),
-            "sid = {$result['sid']}"
-        );
+    if ($selected_language !== 'english') {
+        $write_to_file_result = $lang_manager->writeLanguageKeys($array_of_language_keys);
+        if ($write_to_file_result === false) return array('error' => true);
     }
 
     return true;
