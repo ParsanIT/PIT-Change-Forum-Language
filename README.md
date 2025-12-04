@@ -5,6 +5,8 @@ Now, with this plugin, you can do this without having to upgrade or reinstall, a
 
 ### Where is this plugin useful?
 
+0- Completing the `config_settings.lang.php` file based on `settings.xml`, which is automatically and accurately converted.
+
 1- When a client or you have already installed MyBB and you want to completely change its language.
 
 2- When you want to completely and temporarily change the forum to another language for a trial or training version.
@@ -13,11 +15,13 @@ Now, with this plugin, you can do this without having to upgrade or reinstall, a
 
 ## How to create the necessary language files?
 
-Currently, the necessary language files are named settings.xml, tasks.xml, usergroups.xml, adminviews.xml, which are available in the install directory, and a php file that contain language pack info like MyBB language pack info files. This is to speed up and facilitate the work of various MyBB communities around the world. If you have them ready, you can include them in the plugin and use them easily.
+Currently, the necessary language files are named `settings.xml`, `tasks.xml`, `usergroups.xml`, `adminviews.xml`, which are available in the `install` directory, and a php file that contain language pack info like MyBB language pack info files. This is to speed up and facilitate the work of various MyBB communities around the world. If you have them ready, you can include them in the plugin and use them easily. if you use standard method for translating settings and settinggroups, you do not need add `settings.xml` into the package.
+(The standard method is: add the translations of settings and settings groups one by one in `/inc/languages/{yourlang}/admin/config_settings.lang.php`)
+Don't have enough time and patience for this? Our plugin will help you use `settings.xml` translations with one click.( clean and beautiful ;) )
 
 ## How to add a language:
 
-In the inc/plugins/pit_changeforumlang_languages ​​directory, create a folder with your language code/name and place the translated xml files in it, and also create a language information file with the same language code/name in php format next to it. (According to the Persian language template included in the package)
+In the `inc/plugins/pit_changeforumlang_languages` ​​directory, create a folder with your language code/name and place the translated xml files in it, and also create a language information file with the same language code/name in php format next to it. (According to the `persian` language template included in the package)
 
 For correct and logical functioning, the corresponding MyBB language pack must also be present in the forum so that you can see it for selection in the plugin. (It certainly does not make sense to have the settings section in Russian in a ACP with Chinese language -- however, we may change this if users request and need it.)
 
@@ -30,6 +34,8 @@ For correct and logical functioning, the corresponding MyBB language pack must a
 
 ### این افزونه کجا مفید است؟
 
+0- تکمیل فایل `config_settings.lang.php` بر اساس `settings.xml` که به طور خودکار و دقیق تبدیل انجام میشود.
+
 1- وقتی مشتری یا شما MyBB را از قبل نصب کرده‌اید و می‌خواهید زبان آن را کاملا تغییر دهید.
 
 2- وقتی می‌خواهید انجمن را برای نسخه آزمایشی یا آموزشی به طور کامل و موقت به زبان دیگری تغییر دهید.
@@ -38,10 +44,13 @@ For correct and logical functioning, the corresponding MyBB language pack must a
 
 ## چگونه فایل های زبانی لازم را ایجاد کنیم؟
 
-در حال حاضر فایل‌های زبانی لازم با نام‌های settings.xml ، tasks.xml ، usergroups.xml، adminviews.xml هستند که در دایرکتوری install موجود هستند، و یک فایل php که حاوی اطلاعات بسته زبان مانند فایل‌های اطلاعات بسته زبان MyBB است. اینکار به منظور سرعت بخشیدن و راحتی جوامع مختلف MyBB در سراسر دنیا می‌باشد. اگر آنها را آماده دارید میتوانید در پلاگین بگنجانید و به راحتی استفاده کنید.
+در حال حاضر فایل‌های زبانی لازم با نام‌های `settings.xml` ، `tasks.xml` ، `usergroups.xml`، `adminviews.xml` هستند که در دایرکتوری `install` موجود هستند، و یک فایل php که حاوی اطلاعات بسته زبان مانند فایل‌های اطلاعات بسته زبان MyBB است. اینکار به منظور سرعت بخشیدن و راحتی جوامع مختلف MyBB در سراسر دنیا می‌باشد. اگر آنها را آماده دارید میتوانید در پلاگین بگنجانید و به راحتی استفاده کنید.
+اگر از روش استاندارد برای ترجمه تنظیمات و گروه‌های تنظیمات استفاده می‌کنید، نیازی به اضافه کردن `settings.xml` به بسته ندارید. (روش استاندارد این است: ترجمه‌های تنظیمات و گروه‌های تنظیمات را یکی یکی در `/inc/languages/{yourlang}/admin/config_settings.lang.php` اضافه کنید)
+
+آیا وقت و حوصله کافی برای این کار را ندارید؟ فزونه ما به شما کمک می‌کند تا با یک کلیک از ترجمه `settings.xml` استفاده کنید. ( تمیز و قشنگ ;) )
 
 ## نحوه اضافه کردن زبان:
 
-در دایرکتوری inc/plugins/pit_changeforumlang_languages، پوشه‌ای با کد/نام زبان خود ایجاد کنید و فایل‌های xml ترجمه شده را در آن قرار دهید و همچنین در کنار آن فایل اطلاعات زبانی به همان کد/نام زبان به فرمت php ایجاد کنید.(مطابق الگو زبان persian موجود در بسته)
+در دایرکتوری `inc/plugins/pit_changeforumlang_languages`، پوشه‌ای با کد/نام زبان خود ایجاد کنید و فایل‌های xml ترجمه شده را در آن قرار دهید و همچنین در کنار آن فایل اطلاعات زبانی به همان کد/نام زبان به فرمت php ایجاد کنید.(مطابق الگو زبان `persian` موجود در بسته)
 
 برای عملکرد صحیح و منطقی، بسته زبان MyBB متناظر با آن‌هم باید در انجمن موجود باشد تا بتوانید آن را برای انتخاب در افزونه مشاهده کنید. (مطمئناً منطقی نیست که بخش تنظیمات به زبان روسی در یک ACP با زبان چینی باشد -- با این حال، در صورت درخواست و نیاز کاربران، ممکن است این را تغییر دهیم.)
