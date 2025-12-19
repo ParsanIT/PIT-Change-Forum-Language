@@ -53,7 +53,7 @@
 		</setting>
 		<setting name="adminemail">
 			<title>ایمیل مدیریت</title>
-			<description><![CDATA[آدرس ایمیل مدیریت(مدیرکل). این آدرس برای ایمیل‌های خروجی ارسال شده از طریق انجمن‌ها استفاده خواهد شد.]]></description>
+			<description><![CDATA[آدرس ایمیل مدیریت(ادمین). این آدرس برای ایمیل‌های خروجی ارسال شده از طریق انجمن‌ها استفاده خواهد شد.]]></description>
 			<disporder>5</disporder>
 			<optionscode><![CDATA[text]]></optionscode>
 			<settingvalue><![CDATA[]]></settingvalue>
@@ -151,7 +151,7 @@
 	<settinggroup name="general" title="پیکربندی عمومی" description="این بخش به شما امکان می‌دهد جنبه‌های عمومی انجمن خود را مدیریت کنید." disporder="3" isdefault="1">
 		<setting name="bblanguage">
 			<title>زبان پیشفرض</title>
-			<description><![CDATA[زبان پیش‌فرضی که MyBB باید برای مهمانان و کاربرانی که در پنل کنترل کاربری خود زبان انتخابی ندارند، استفاده کند.]]></description>
+			<description><![CDATA[زبان پیش‌فرضی که MyBB باید برای مهمانان و کاربرانی که در کنترل‌پنل کاربری خود زبان انتخابی ندارند، استفاده کند.]]></description>
 			<disporder>1</disporder>
 			<optionscode><![CDATA[language]]></optionscode>
 			<settingvalue><![CDATA[persian]]></settingvalue>
@@ -401,7 +401,7 @@ max=9]]></optionscode>
 		</setting>
 		<setting name="extraadmininfo">
 			<title>آمار پیشرفته / اطلاعات اشکال‌زدایی</title>
-			<description><![CDATA[بار سرور، زمان تولید، میزان استفاده از حافظه و غیره را در پایین تمام صفحات پوشه ریشه نشان می‌دهد. لطفاً توجه داشته باشید که فقط مدیران کل این اطلاعات را می‌بینند.]]></description>
+			<description><![CDATA[بار سرور، زمان تولید، میزان استفاده از حافظه و غیره را در پایین تمام صفحات پوشه ریشه نشان می‌دهد. لطفاً توجه داشته باشید که فقط ادمین‌ها این اطلاعات را می‌بینند.]]></description>
 			<disporder>9</disporder>
 			<optionscode><![CDATA[yesno]]></optionscode>
 			<settingvalue><![CDATA[1]]></settingvalue>
@@ -528,7 +528,7 @@ none=مخفی کردن خطاها و هشدارها
 			<isdefault>1</isdefault>
 		</setting>
 		<setting name="regdateformat">
-			<title>Registered Date Format</title>
+			<title>قالب‌بندی تاریخ ثبت‌نام</title>
 			<description><![CDATA[قالبی که در showthread استفاده شده و زمان ثبت نام کاربر نمایش داده میدهد.]]></description>
 			<disporder>4</disporder>
 			<optionscode><![CDATA[text]]></optionscode>
@@ -1353,7 +1353,7 @@ min=1]]></optionscode>
 		</setting>
 		<setting name="postmergemins">
 			<title>زمان ادغام پست</title>
-			<description><![CDATA[با فعال کردن این گزینه، پست‌هایی که ظرف x دقیقه توسط یک نویسنده و درست پس از یکدیگر ارسال شوند، ادغام خواهند شد. محدودیت زمانی (به دقیقه) برای ادغام پست‌ها را تنظیم کنید. برای غیرفعال کردن این ویژگی، آن را روی ۰ تنظیم کنید. پیش‌فرض: 60]]></description>
+			<description><![CDATA[با فعال کردن این گزینه، پست‌هایی که ظرف x دقیقه توسط یک نویسنده و درست پس از یکدیگر ارسال شوند، ادغام خواهند شد. محدودیت زمانی (به دقیقه) برای ادغام پست‌ها را تنظیم کنید. برای غیرفعال کردن این ویژگی، آن را روی 0 تنظیم کنید. پیش‌فرض: 60]]></description>
 			<disporder>6</disporder>
 			<optionscode><![CDATA[numeric
 min=0]]></optionscode>
@@ -1390,7 +1390,7 @@ min=0]]></optionscode>
 			<disporder>10</disporder>
 			<optionscode><![CDATA[radio
 no=IP را نمایش نده
-hide=به مدیران کل و مدیران نمایش بده
+hide=به ادمین‌ها و مدیران نمایش بده
 show=به همه کاربران نمایش بده]]></optionscode>
 			<settingvalue><![CDATA[hide]]></settingvalue>
 			<isdefault>1</isdefault>
@@ -1404,8 +1404,8 @@ show=به همه کاربران نمایش بده]]></optionscode>
 			<isdefault>1</isdefault>
 		</setting>
 		<setting name="showeditedbyadmin">
-			<title>نمایش یادداشت «ویرایش شده توسط» در پست‌های مدیران کل و مدیران</title>
-			<description><![CDATA[نمایش یادداشت «ویرایش شده توسط» هنگام ویرایش پست نوشته شده توسط مدیرکل یا مدیر.]]></description>
+			<title>نمایش یادداشت «ویرایش شده توسط» در پست‌های ادمین‌ها و مدیران</title>
+			<description><![CDATA[نمایش یادداشت «ویرایش شده توسط» هنگام ویرایش پست نوشته شده توسط ادمین یا مدیر.]]></description>
 			<disporder>12</disporder>
 			<optionscode><![CDATA[yesno]]></optionscode>
 			<settingvalue><![CDATA[1]]></settingvalue>
@@ -1422,7 +1422,7 @@ min=0]]></optionscode>
 		</setting>
 		<setting name="maxpostvideos">
 			<title>حداکثر ویدئوها در پست</title>
-			<description><![CDATA[حداکثر تعداد ویدئوهایی که یک کاربر می‌تواند در پست خود قرار دهد را وارد کنید. برای غیرفعال کردن این گزینه، آن را روی ۰ تنظیم کنید.]]></description>
+			<description><![CDATA[حداکثر تعداد ویدئوهایی که یک کاربر می‌تواند در پست خود قرار دهد را وارد کنید. برای غیرفعال کردن این گزینه، آن را روی 0 تنظیم کنید.]]></description>
 			<disporder>14</disporder>
 			<optionscode><![CDATA[numeric
 min=0]]></optionscode>
@@ -1708,7 +1708,7 @@ min=1]]></optionscode>
 		</setting>
 		<setting name="canviewownwarning">
 			<title>آیا کاربران می‌توانند اخطارهای خودشان را مشاهده کنند؟</title>
-			<description><![CDATA[برای اینکه کاربران بتوانند اخطارهای اخیر را در کنترل پنل کاربری خود مشاهده کنند و سطح اخطار را در پروفایلشان ببینند، روی بله تنظیم کنید.]]></description>
+			<description><![CDATA[برای اینکه کاربران بتوانند اخطارهای اخیر را در کنترل‌پنل کاربری خود مشاهده کنند و سطح اخطار را در پروفایلشان ببینند، روی بله تنظیم کنید.]]></description>
 			<disporder>3</disporder>
 			<optionscode><![CDATA[yesno]]></optionscode>
 			<settingvalue><![CDATA[1]]></settingvalue>
@@ -1804,14 +1804,14 @@ min=0]]></optionscode>
 			<disporder>9</disporder>
 			<optionscode><![CDATA[radio
 no=IP را نمایش نده
-hide=به مدیران کل و مدیران نمایش بده
+hide=به ادمین‌ها و مدیران نمایش بده
 show=به همه کاربران نمایش بده]]></optionscode>
 			<settingvalue><![CDATA[hide]]></settingvalue>
 			<isdefault>1</isdefault>
 		</setting>
 		<setting name="maxpmquotedepth">
 			<title>حداکثر تگ‌های نقل‌قول‌های تودرتو</title>
-			<description><![CDATA[حداکثر سطح عمق برای برچسب‌های نقل قول. هنگام پاسخ به یک پیام خصوصی، تمام نقل قول‌های تو در تو که از این آستانه تجاوز کنند، به طور خودکار حذف می‌شوند. توجه داشته باشید که این مقدار فقط هنگام پاسخ به نقل قول اعمال می‌شود - هنوز هم می‌توان به صورت دستی نقل قول‌هایی را وارد کرد که از این حد تجاوز کنند و این تنظیم بر پیام‌های خصوصی که قبلاً ارسال شده‌اند تأثیری نخواهد گذاشت. برای غیرفعال کردن این محدودیت، آن را روی ۰ تنظیم کنید.]]></description>
+			<description><![CDATA[حداکثر سطح عمق برای برچسب‌های نقل قول. هنگام پاسخ به یک پیام خصوصی، تمام نقل قول‌های تو در تو که از این آستانه تجاوز کنند، به طور خودکار حذف می‌شوند. توجه داشته باشید که این مقدار فقط هنگام پاسخ به نقل قول اعمال می‌شود - هنوز هم می‌توان به صورت دستی نقل قول‌هایی را وارد کرد که از این حد تجاوز کنند و این تنظیم بر پیام‌های خصوصی که قبلاً ارسال شده‌اند تأثیری نخواهد گذاشت. برای غیرفعال کردن این محدودیت، آن را روی 0 تنظیم کنید.]]></description>
 			<disporder>10</disporder>
 			<optionscode><![CDATA[numeric
 min=0]]></optionscode>
@@ -2239,17 +2239,17 @@ min=1]]></optionscode>
 			<isdefault>1</isdefault>
 		</setting>
 	</settinggroup>
-	<settinggroup name="cpprefs" title="تنظیمات کنترل پنل (سراسری)" description="این بخش به شما امکان می‌دهد تنظیمات کلی پنل مدیریت را تنظیم کنید." disporder="23" isdefault="1">
+	<settinggroup name="cpprefs" title="تنظیمات کنترل‌پنل (سراسری)" description="این بخش به شما امکان می‌دهد تنظیمات کلی پنل مدیریت را تنظیم کنید." disporder="23" isdefault="1">
 		<setting name="cplanguage">
-			<title>زبان کنترل پنل</title>
-			<description><![CDATA[زبان کنترل پنل]]></description>
+			<title>زبان کنترل‌پنل</title>
+			<description><![CDATA[زبان کنترل‌پنل]]></description>
 			<disporder>1</disporder>
 			<optionscode><![CDATA[adminlanguage]]></optionscode>
 			<settingvalue><![CDATA[persian]]></settingvalue>
 			<isdefault>1</isdefault>
 		</setting>
 		<setting name="cpstyle">
-			<title>ظاهر کنترل پنل</title>
+			<title>ظاهر کنترل‌پنل</title>
 			<description><![CDATA[استایل پیش‌فرضی که پنل مدیریت از آن استفاده خواهد کرد. استایل‌ها درون پوشه styles قرار دارند. نام پوشه‌ای درون آن پوشه، عنوان استایل را تشکیل می‌دهد و style.css درون پوشه style title، فایل استایل css است.]]></description>
 			<disporder>2</disporder>
 			<optionscode><![CDATA[cpstyle]]></optionscode>
@@ -2527,7 +2527,7 @@ delete=حذف کردن]]></optionscode>
 		<setting name="stopforumspam_min_weighting_before_spam">
 			<title>حداقل وزن لازم StopForumSpam چند باشد؟</title>
 			<description>
-				<![CDATA[حداقل وزنی که از StopForumSpam قبل از تصمیم‌گیری در مورد اسپمر بودن یک کاربر دریافت می‌شود، باید عددی بین ۰ تا ۱۰۰ باشد.]]></description>
+				<![CDATA[حداقل وزنی که از StopForumSpam قبل از تصمیم‌گیری در مورد اسپمر بودن یک کاربر دریافت می‌شود، باید عددی بین 0 تا 100 باشد.]]></description>
 			<disporder>5</disporder>
 			<optionscode><![CDATA[text]]></optionscode>
 			<settingvalue><![CDATA[50.00]]></settingvalue>

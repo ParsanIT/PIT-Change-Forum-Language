@@ -279,9 +279,9 @@
 		<gid><![CDATA[4]]></gid>
 		<type><![CDATA[1]]></type>
 		<title><![CDATA[مدیران‌کل]]></title>
-		<description><![CDATA[گروهی که همه‌ی مدیران کل در آن قرار دارند.]]></description>
+		<description><![CDATA[گروهی که همه‌ی ادمین‌ها در آن قرار دارند.]]></description>
 		<namestyle><![CDATA[<span style="color: green;"><strong><em>{username}</em></strong></span>]]></namestyle>
-		<usertitle><![CDATA[مدیرکل]]></usertitle>
+		<usertitle><![CDATA[ادمین]]></usertitle>
 		<stars><![CDATA[7]]></stars>
 		<starimage><![CDATA[images/star.png]]></starimage>
 		<image><![CDATA[]]></image>

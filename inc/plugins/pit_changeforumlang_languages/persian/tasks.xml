@@ -86,7 +86,7 @@
 	</task>
 	<task>
 		<title>هرس کردن گزارشات</title>
-		<description><![CDATA[به طور خودکار فایل‌های لاگ قدیمی MyBB (لاگ‌های مدیرکل، مدیر، وظایف، تبلیغات و ایمیل) را پاک می‌کند.]]></description>
+		<description><![CDATA[به طور خودکار فایل‌های لاگ قدیمی MyBB (لاگ‌های ادمین، مدیر، وظایف، تبلیغات و ایمیل) را پاک می‌کند.]]></description>
 		<file>logcleanup</file>
 		<minute>21</minute>
 		<hour>5</hour>
