@@ -29,7 +29,7 @@ function pit_changeforumlang_info()
         'website'       => 'https://parsanit.ir/',
         'author'        => 'firstboy000',
         'authorsite'    => 'https://parsanit.ir/',
-        'version'       => '1.0',
+        'version'       => '1.3',
         'codename'      => $codename,
         'compatibility' => '18*',
         // "guid" 			=> "",
