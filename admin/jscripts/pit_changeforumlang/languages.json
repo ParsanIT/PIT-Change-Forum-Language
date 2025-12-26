@@ -1,0 +1,135 @@
+{
+  "english": {
+    "data": {
+      "__comment_rtl": "Sets if the language is RTL (Right to Left) (1: yes, 0: no)",
+      "__comment_htmllang": "Sets the lang in the <html> on all pages",
+      "__comment_charset": "Sets the character set, blank uses the default.",
+      "__comment_icon_code": "use https://flagicons.lipis.dev/",
+      "__comment_common_name": "equal with folder name",
+      "name": "English",
+      "rtl": 0,
+      "htmllang": "en",
+      "charset": "UTF-8",
+      "icon_code": "gb",
+      "common_name": "english"
+    },
+    "packages": [
+      {
+        "__comment_seperator_0": "PIT Change forum languages data(difference with language pack base data)",
+
+        "__comment_is_default": "is default language pack in that exist in mybb package... other language pack can't be default...",
+        "__comment_mybb_mod_pid": "can find from url of that like https://community.mybb.com/mods.php?action=view&pid=1675",
+        "__comment_mybb_mod_codename": "can find from details of that project(in edit page)",
+        "__comment_mybb_userid": "can find from url of user profile like https://community.mybb.com/user-79079.html",
+        "is_default": true,
+        "mybb_mod_pid": 0,
+        "mybb_mod_codename": "english",
+        "mybb_userid": 1,
+        "mybb_username": "Chris Boulton",
+
+        "__comment_githubrepo": "github repo base link (for browse) like: https://github.com/ParsanIT/MyBB-Persian-Language-Pack",
+        "__comment_githubrepo_release_zipball": "github repo suggestion release asset like: https://github.com/ParsanIT/MyBB-Persian-Language-Pack/archive/refs/tags/1839.zip",
+        "__comment_githubrepo_release_version": "github repo suggestion release 1.8.39",
+
+        "__comment_includes": {
+          "settings_translation": "Inserted setting language strings into standard method(inc/languages/{common_name}/admin/settings.php), true or false",
+          "install_upgrade_translation": "Install and upgrade is translated in this languagepack?  true or false",
+          "acp_theme": "if package contain acp theme, input name of that(same as that folder) here"
+        },
+        "includes": {
+          "settings_translation": true,
+          "install_upgrade_translation": false,
+          "acp_theme": ""
+        },
+        "__comment_recommended": {
+          "acp_theme": "if a theme has spcefic option for your language such as RTL, input required data of that here such as below"
+        },
+        "recommended": {
+          "acp_theme": {
+            "forcefully": true,
+            "name": "default"
+          }
+        },
+
+        "__comment_seperator_1": "Language pack data",
+
+        "__comment_name": "The friendly name of the language",
+        "__comment_author": "The author of the language",
+        "__comment_website": "The language authors website",
+        "__comment_docs_link": "The documentation site link",
+        "__comment_common_issues_link": "The documentation FAQs site link",
+        "__comment_support_link": "The support website link",
+        "__comment_version": "Compatible version of MyBB",
+        "__comment_admin": "Sets if the translation includes the Admin CP (1: yes, 0: no)",
+
+        "name": "English (American)",
+        "author": "MyBB",
+        "website": "https://mybb.com/",
+        "docs_link": "",
+        "common_issues_link": "",
+        "support_link": "",
+        "version": "1839",
+        "admin": 1,
+        "icon_code": "us"
+      }
+    ]
+  },
+  "persian": {
+    "data": {
+      "name": "Persian - پارسی",
+      "rtl": 1,
+      "htmllang": "fa",
+      "charset": "UTF-8",
+      "icon_code": "ir",
+      "common_name": "persian"
+    },
+    "packages": [
+      {
+        "__comment_seperator_0": "PIT Change forum languages data",
+
+        "__comment_mybb_mod_pid": "can find from url of that like https://community.mybb.com/mods.php?action=view&pid=1679",
+        "__comment_mybb_mod_codename": "can find from details of that project(in edit page)",
+        "__comment_mybb_userid": "can find from url of user profile like https://community.mybb.com/user-79079.html",
+        "mybb_mod_pid": 1679,
+        "mybb_mod_codename": "pit_mybb_persian_language_pack",
+        "mybb_userid": 79079,
+        "mybb_username": "firstboy000",
+
+        "__comment_githubrepo": "github repo base link (for browse) like: https://github.com/ParsanIT/MyBB-Persian-Language-Pack",
+
+        "githubrepo": "https://github.com/ParsanIT/MyBB-Persian-Language-Pack",
+
+        "__comment_includes": {
+          "settings_translation": "Inserted setting language strings into standard method(inc/languages/{common_name}/admin/settings.php), true or false",
+          "install_upgrade_translation": "Install and upgrade is translated in this languagepack?  true or false",
+          "acp_theme": "if package contain acp theme, input name of that(same as that folder) here"
+        },
+        "includes": {
+          "settings_translation": true,
+          "install_upgrade_translation": true,
+          "acp_theme": ""
+        },
+        "__comment_recommended": {
+          "acp_theme": "if a theme has spcefic option for your language such as RTL, input required data of that here such as below"
+        },
+        "recommended": {
+          "acp_theme": {
+            "forcefully": true,
+            "name": "parsanit_default_rtl"
+          }
+        },
+
+        "__comment_seperator_1": "Language pack data",
+
+        "name": "پارسی - Persian",
+        "author": "firstboy000",
+        "website": "https://parsanit.ir/",
+        "docs_link": "",
+        "common_issues_link": "",
+        "support_link": "mailto:first_boy73@yahoo.com",
+        "version": "1839",
+        "admin": 1
+      }
+    ]
+  }
+}

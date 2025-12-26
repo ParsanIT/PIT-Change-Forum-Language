@@ -2,8 +2,8 @@
 
 /**
  * Plugin: PIT Change Forum Language
- * Description: Change the language of various sections that require changes to the database, without having to perform an upgrade or reinstallation process.
- * Version: 1.0
+ * Description: Install language packges with one click and change the language of various sections that require changes to the database, without having to perform an upgrade or reinstallation process.
+ * Version: 2.0
  * Author: firstboy000
  * Author Web: https://ParsanIT.ir
  * License: GPL v3
@@ -21,64 +21,106 @@ function pit_changeforumlang_admin_module()
             $lang->load($codename);
         }
 
-        if ($mybb->get_input('action') == 'save') {
-            return pit_changeforumlang_save_settings();
-        } else if ($mybb->get_input('action') == 'preconfirm') {
-            return pit_changeforumlang_preconfirm();
+        if ($mybb->get_input('action') == 'install-language') {
+            return pit_changeforumlang_install_language_pack();
+        } else if ($mybb->get_input('action') == 'recommended') {
+            return pit_changeforumlang_recommended();
+        } else if ($mybb->get_input('action') == 'install-theme') {
+            return pit_changeforumlang_install_theme();
         }
 
-        return pit_changeforumlang_show_form();
+        return pit_changeforumlang_select_language_pack();
     }
 }
 
-class LanguageFileManager
+class PITFileManager
 {
-    private $file_path;
-    private $original_perms;
+    protected $file_path;
+    protected $original_perms;
 
     public function __construct($file_path)
     {
         $this->file_path = $file_path;
+        $this->file_exists(false);
     }
 
-    private function ensureWritable()
+    protected function changeFilePermission($permcode = null)
     {
-        if (!file_exists($this->file_path) || !is_file($this->file_path)) {
-            throw new Exception("The file does not exist: " . $this->file_path);
-        }
+        $this->file_exists(); // or raise error exceptions
 
-        if (is_writable($this->file_path)) {
-            return true;
-        }
+        if ($permcode === null) $permcode = 0644;
 
         $original_perms = fileperms($this->file_path);
-        if (chmod($this->file_path, 0644) && is_writable($this->file_path)) {
+        if (chmod($this->file_path, $permcode)) {
             $this->original_perms = $original_perms;
-            return true;
+
+            return array(
+                "original_perms" => $original_perms,
+                "changed" => true,
+            );
         }
+
+        $this->restorePermissions();
+
+        throw new Exception("The file permissions can't change: " . $this->file_path);
+    }
+
+    protected function file_exists($raiseException = true)
+    {
+        if (!file_exists($this->file_path) || !is_file($this->file_path)) {
+            if ($raiseException === true) throw new Exception("The file does not exist: " . $this->file_path);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function ensureWritable()
+    {
+        $this->file_exists(); // or raise error exceptions
+
+        if (is_writable($this->file_path)) return true;
+
+        $this->changeFilePermission();
+
+        if (is_writable($this->file_path)) return true;
 
         throw new Exception("The file is not writable: " . $this->file_path);
     }
 
-    private function restorePermissions()
+    protected function ensureReadable()
+    {
+        $this->file_exists(); // or raise error exceptions
+
+        if (is_readable($this->file_path)) return true;
+
+        $this->changeFilePermission(null, false);
+
+        if (is_readable($this->file_path)) return true;
+
+        throw new Exception("The file is not readable: " . $this->file_path);
+    }
+
+    protected function restorePermissions()
     {
         if (isset($this->original_perms)) {
             chmod($this->file_path, $this->original_perms);
         }
     }
 
-    private function escapeString($string)
+    protected function escapeString($string)
     {
         // return substr(json_encode($string, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 1, -1);
-        $replacements = [
+        /* $replacements = [
             "\\" => "\\\\",
             "\"" => "\\\"",
         ];
 
-        return trim(strtr($string, $replacements));
+        return trim(strtr($string, $replacements)); */
+        return $string;
     }
 
-    private function findLineIndex($file_content_lines, $searchfor, $findlast_position = false)
+    protected function findLineIndex($file_content_lines, $searchfor, $findlast_position = false)
     {
         if (!is_array($file_content_lines) && is_string($file_content_lines)) {
             $file_content_lines = explode("\n", $file_content_lines);
@@ -97,7 +139,7 @@ class LanguageFileManager
         return $last_position;
     }
 
-    private function appendTo($file_content, $content, $searchfor = null, $before = false, $to_another_line = false, $findlast_position = false)
+    protected function appendTo($file_content, $content, $searchfor = null, $before = false, $to_another_line = false, $findlast_position = false)
     {
         if ($searchfor === null || $searchfor === '') {
             $searchfor = '?>';
@@ -129,7 +171,18 @@ class LanguageFileManager
         }
     }
 
-    public function writePlainText($content, $searchfor = null)
+    public function readFile()
+    {
+        $this->ensureReadable();
+
+        $file_content = file_get_contents($this->file_path);
+
+        $this->restorePermissions();
+
+        return $file_content;
+    }
+
+    public function writePlainText($content, $searchfor = null, $before = false, $to_another_line = false, $findlast_position = false)
     {
         try {
             $this->ensureWritable();
@@ -137,7 +190,7 @@ class LanguageFileManager
             $file_content = file_get_contents($this->file_path);
 
             $content = $this->escapeString($content);
-            $file_content = $this->appendTo($file_content, $content, $searchfor);
+            $file_content = $this->appendTo($file_content, $content, $searchfor, $before, $to_another_line, $findlast_position);
 
             $result = file_put_contents($this->file_path, $file_content);
 
@@ -145,12 +198,66 @@ class LanguageFileManager
 
             return $result !== false;
         } catch (Exception $e) {
-            error_log("LanguageFileManager Error: " . $e->getMessage());
+            error_log("FileManager Error: " . $e->getMessage());
             return false;
         }
     }
 
-    private function languageKeyExists($key, $file_content = null)
+    public static function move_contents($source, $destination)
+    {
+        if (substr($source, -1) !== DIRECTORY_SEPARATOR) $source .= DIRECTORY_SEPARATOR;
+        if (substr($destination, -1) !== DIRECTORY_SEPARATOR) $destination .= DIRECTORY_SEPARATOR;
+
+        $files = scandir($source);
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') continue;
+
+            $src = $source . $file;
+            $dest = $destination . $file;
+
+            if (is_dir($src)) {
+                if (!is_dir($dest)) mkdir($dest, 0755, true);
+                self::move_contents($src, $dest);
+                rmdir($src);
+            } else {
+                rename($src, $dest);
+            }
+        }
+    }
+
+    public static function get_dir_content($path, $only_dir)
+    {
+        clearstatcache();
+        $files = scandir($path);
+        $directory_lists = array();
+
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') continue;
+
+            if ($only_dir === true) {
+                if (is_dir($path . $file)) $directory_lists[] = $file;
+            } else {
+                $directory_lists[] = $file;
+            }
+        }
+
+        return $directory_lists;
+    }
+}
+class LanguageFileManager extends PITFileManager
+{
+    protected function escapeString($string)
+    {
+        // return substr(json_encode($string, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), 1, -1);
+        $replacements = [
+            "\\" => "\\\\",
+            "\"" => "\\\"",
+        ];
+
+        return trim(strtr($string, $replacements));
+    }
+
+    protected function languageKeyExists($key, $file_content = null)
     {
         if ($file_content === null) {
             $file_content = file_get_contents($this->file_path);
@@ -236,86 +343,240 @@ class LanguageFileManager
     }
 }
 
-function pit_changeforumlang_show_form()
+class GithubZipballManager
 {
-    global $lang, $page;
+    public $repo_url;
+    public $zipball_url;
+    private $plugin_languages_dir;
+    private $temp_dir;
+    private $unzip_temp_dir;
+    private $package_zip;
+
+    public function __construct($zipball_url)
+    {
+        $this->zipball_url = $zipball_url;
+        if (!$this->validate_zipball_url($zipball_url)) throw new Exception("URL is invalid: " . $this->zipball_url);
+
+        $this->plugin_languages_dir = MYBB_ROOT . 'inc/plugins/pit_changeforumlang_languages/';
+        $this->temp_dir = $this->plugin_languages_dir . 'temp/';
+        $this->unzip_temp_dir = $this->temp_dir . 'unzip_temp/';
+    }
+
+    public function validate_zipball_url()
+    {
+        $github_domain = "https://github.com/";
+        $github_zipball_domain = "https://api.github.com/repos/";
+
+        if (substr($this->zipball_url, 0, 29) !== $github_zipball_domain) return false;
+        $github_url_parts = explode('/', substr($this->zipball_url, 29));
+        if (count($github_url_parts) < 2) return false;
+        $github_owner = $github_url_parts[0];
+        $github_repo = $github_url_parts[1];
+        if (!$github_owner) return false;
+        if (!$github_repo) return false;
+
+        $this->repo_url = $github_domain . $github_owner . '/' . $github_repo . '/';
+
+        return true;
+    }
+
+    private function prepare_directories()
+    {
+        if (!is_dir($this->plugin_languages_dir)) {
+            @mkdir($this->plugin_languages_dir, 0755, true);
+            file_put_contents($this->plugin_languages_dir . 'index.html', "<html><head><title></title></head><body>&nbsp;</body></html>");
+        }
+        if (!is_dir($this->temp_dir)) {
+            @mkdir($this->temp_dir, 0755, true);
+            file_put_contents($this->temp_dir . 'index.html', "<html><head><title></title></head><body>&nbsp;</body></html>");
+        }
+        if (!is_dir($this->unzip_temp_dir)) @mkdir($this->unzip_temp_dir, 0755, true);
+    }
+
+    public function get_and_extract()
+    {
+        $this->prepare_directories();
+
+        $ch = curl_init($this->zipball_url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
+        $file_content = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            return array("error" => 'cURL error: ' . curl_error($ch));
+        }
+
+        $this->package_zip = $this->temp_dir . 'temp.zip';
+        file_put_contents($this->package_zip, $file_content);
+
+        $zip = new ZipArchive;
+
+        if ($zip->open($this->package_zip) === true) {
+            $zip->extractTo($this->unzip_temp_dir);
+
+            $zip->close();
+        } else {
+            return array("error" => 'Error: Could not open the ZIP file!');
+        }
+
+
+        $plugin_temp_root_dir = glob($this->unzip_temp_dir . '*')[0];
+
+        PITFileManager::move_contents($plugin_temp_root_dir, MYBB_ROOT);
+
+        rmdir($plugin_temp_root_dir);
+        rmdir($this->unzip_temp_dir);
+        unlink($this->package_zip);
+
+        return true;
+    }
+}
+
+
+function pit_changeforumlang_select_language_pack()
+{
+    global $mybb, $lang, $page;
+
+    $page->extra_header .= '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />' . "\n";
+    $page->extra_header .= '<script type="text/javascript" src="' . $mybb->settings['bburl'] . '/admin/jscripts/pit_changeforumlang/pit_changeforumlang.js"></script>' . "\n";
+    $page->extra_header .= "<script>
+        if (!lang) var lang = {};
+
+        lang.pit_cfl = {
+            'author': '{$lang->pit_changeforumlang_js_author}',
+            'inc_admin': '{$lang->pit_changeforumlang_js_inc_admin}',
+            'inc_setting': '{$lang->pit_changeforumlang_js_inc_setting}',
+            'inc_acp_theme': '{$lang->pit_changeforumlang_js_inc_acp_theme}',
+            'inc_install': '{$lang->pit_changeforumlang_js_inc_install}',
+            'action_install': '{$lang->pit_changeforumlang_js_action_install}',
+            'action_dl_zip': '{$lang->pit_changeforumlang_js_action_dl_zip}',
+            'action_dl_mybbmod': '{$lang->pit_changeforumlang_js_action_dl_mybbmod}',
+            'action_docs': '{$lang->pit_changeforumlang_js_action_docs}',
+            'action_website': '{$lang->pit_changeforumlang_js_action_website}',
+            'action_issues': '{$lang->pit_changeforumlang_js_action_issues}',
+            'action_back': '{$lang->pit_changeforumlang_js_action_back}',
+            'action_next': '{$lang->pit_changeforumlang_js_action_next}',
+            'install_success': '{$lang->pit_changeforumlang_js_install_success}',
+            'install_error': '{$lang->pit_changeforumlang_js_install_error}',
+            'version_may_not_compatible': '{$lang->pit_changeforumlang_selected_may_not_compatible}',
+            'version_fully_compatible': '{$lang->pit_changeforumlang_selected_fully_compatible}',
+            'version_is_lower_version': '{$lang->pit_changeforumlang_selected_is_lower_version}',
+            'version_selected_version_no_info': '{$lang->pit_changeforumlang_selected_version_no_info}',
+            'q_update_bblang': '{$lang->pit_changeforumlang_update_bblang}',
+            'q_update_bblang_desc': '{$lang->pit_changeforumlang_update_bblang_desc}',
+            'yes_confirm': '{$lang->yes}',
+	        'no_confirm': '{$lang->no}',
+        };
+        var pit_cfl_vars = {
+            'rootpath': '{$mybb->settings['bburl']}',
+            'current_version': '{$mybb->version_code}',
+            'current_language': '{$mybb->settings['cplanguage']}',
+            'cpstyle_images_url': '{$mybb->settings['bburl']}/admin/styles/{$mybb->settings['cpstyle']}/images',
+            'spinner_image': '{$mybb->settings['bburl']}/admin/styles/{$mybb->settings['cpstyle']}/images/spinner.gif',
+            'my_post_key': '{$mybb->post_code}',
+        };
+
+        window.addEventListener('DOMContentLoaded', function () {
+            pit_cfl_main()
+        });
+    </script>";
 
     $page->add_breadcrumb_item($lang->pit_changeforumlang_pl_title, 'index.php?module=config-pit-changeforumlang');
     $page->output_header($lang->pit_changeforumlang_pl_title);
 
-    $sub_tabs['pit-changeforumlang'] = array(
-        'title'         => $lang->pit_changeforumlang_pl_title,
-        'description'   => $lang->pit_changeforumlang_pl_desc,
-        'link'          => 'index.php?module=config-pit-changeforumlang',
+    $sub_tabs = array(
+        'pit-changeforumlang' => array(
+            'title'         => $lang->pit_changeforumlang_pl_title,
+            'description'   => $lang->pit_changeforumlang_pl_desc,
+            'link'          => 'index.php?module=config-pit-changeforumlang',
+        ),
     );
+
     $page->output_nav_tabs($sub_tabs, 'pit-changeforumlang');
 
-    $languages = array();
-
-    $plugin_languages_dir = MYBB_ROOT . 'inc/plugins/pit_changeforumlang_languages/';
-    if (!is_dir($plugin_languages_dir)) {
-        @mkdir($plugin_languages_dir, 0755, true);
-    }
-
-    $languagepacks = $lang->get_languages();
-
-    if (is_dir($plugin_languages_dir)) {
-        $folders = scandir($plugin_languages_dir);
-        foreach ($folders as $folder) {
-            if ($folder != '.' && $folder != '..' && is_dir($plugin_languages_dir . $folder)) {
-                if (array_key_exists($folder, $languagepacks)) {
-                    $languages[$folder] = $languagepacks[$folder];
-                }
-            }
-        }
-    }
-
-    $form = new Form("index.php?module=config-pit-changeforumlang&amp;action=preconfirm", "get");
-    echo $form->generate_hidden_field('module', 'config-pit-changeforumlang');
-    echo $form->generate_hidden_field('action', 'preconfirm');
-
-    $form_container = new FormContainer($lang->pit_changeforumlang_header);
-
-    $form_container->output_row($lang->pit_changeforumlang_help, $lang->pit_changeforumlang_help_desc);
-    $form_container->output_row(
-        $lang->pit_changeforumlang_select_lang,
-        $lang->pit_changeforumlang_select_lang_desc,
-        $form->generate_select_box('selected_language', $languages, '', array('id' => 'selected_language')),
-        'selected_language'
-    );
-    $form_container->output_row(
-        $lang->pit_changeforumlang_update_bblang,
-        $lang->pit_changeforumlang_update_bblang_desc,
-        $form->generate_yes_no_radio('update_bblang', $languages, '', array('id' => 'update_bblang')),
-        'update_bblang'
-    );
-
-    $form_container->end();
-
-    $buttons[] = $form->generate_submit_button($lang->pit_changeforumlang_check_requirement);
-    $form->output_submit_wrapper($buttons);
-    $form->end();
+    echo '<div id="pit_cfl_content_header"></div>';
+    echo '<div id="pit_cfl_content"></div>';
+    echo '<div id="pit_cfl_content_footer"></div>';
 
     $page->output_footer();
 }
 
-function pit_changeforumlang_preconfirm()
+function pit_changeforumlang_install_language_pack()
 {
     global $db, $mybb, $lang, $page;
 
     $page->add_breadcrumb_item($lang->pit_changeforumlang_pl_title, 'index.php?module=config-pit-changeforumlang');
     $page->output_header($lang->pit_changeforumlang_pl_title);
 
-    $sub_tabs['pit-changeforumlang'] = array(
-        'title'         => $lang->pit_changeforumlang_pl_title,
-        'description'   => $lang->pit_changeforumlang_pl_desc,
-        'link'          => 'index.php?module=config-pit-changeforumlang',
+    $sub_tabs = array(
+        'pit-changeforumlang' => array(
+            'title'         => $lang->pit_changeforumlang_pl_title,
+            'description'   => $lang->pit_changeforumlang_pl_desc,
+            'link'          => 'index.php?module=config-pit-changeforumlang',
+        ),
     );
+
     $page->output_nav_tabs($sub_tabs, 'pit-changeforumlang');
 
-    if ($mybb->get_input('action') != 'preconfirm') {
+    if ($mybb->get_input('action') != 'install-language') {
         admin_redirect("index.php?module=config-pit-changeforumlang");
         return false;
+    }
+
+
+    verify_post_check($mybb->get_input('my_post_key'));
+    $form_data_language = $mybb->get_input('language', MyBB::INPUT_STRING);
+    $form_data_index = $mybb->get_input('index', MyBB::INPUT_INT);
+    $form_data_is_exist = $mybb->get_input('is_exist', MyBB::INPUT_BOOL);
+    $form_data_acp_theme = $mybb->get_input('acp_theme', MyBB::INPUT_STRING);
+    $form_data_mybb_mod_pid = $mybb->get_input('mybb_mod_pid', MyBB::INPUT_INT);
+    $form_data_zipball_url = $mybb->get_input('zipball_url', MyBB::INPUT_STRING);
+    $form_data_update_bblang = $mybb->get_input('update_bblang', MyBB::INPUT_STRING) == 'yes' ? true : false;
+
+    // $form_data_is_exist === true, only apply language, because this should be exist by default
+    // others should be download and install from github
+    if (!$form_data_is_exist) {
+        $zip = new GithubZipballManager($form_data_zipball_url);
+        $zip->get_and_extract();
+    }
+
+    if (isset($form_data_language) && pit_changeforumlang_read_and_apply_xmls($form_data_language) !== true) {
+        pit_changeforumlang_message($lang->pit_changeforumlang_error_occurred, 'error');
+        return false;
+    }
+
+    $form_data_language = isset($form_data_language) ? $form_data_language : 'english';
+
+    $condition = $form_data_update_bblang ? "OR name = 'bblanguage'" : "";
+    $db->update_query('settings', array('value' => $db->escape_string($form_data_language)), "name = 'cplanguage' {$condition}");
+    $lang->set_language($form_data_language, "admin");
+
+    if (strlen($form_data_acp_theme) > 0 && $mybb->settings['cpstyle'] === 'default' && is_dir(MYBB_ROOT . '/admin/styles/' . $form_data_acp_theme . '/')) {
+        $db->update_query('settings', array('value' => $db->escape_string($form_data_acp_theme)), "name = 'cpstyle'");
+    }
+
+    rebuild_settings();
+
+    $languagepacks = $lang->get_languages();
+
+    flash_message($lang->sprintf($lang->pit_changeforumlang_finish, htmlspecialchars_uni($languagepacks[$form_data_language])), "success");
+    admin_redirect("index.php?module=config-pit-changeforumlang&action=recommended&language={$form_data_language}&index={$form_data_index}");
+
+    $page->output_footer();
+}
+
+function pit_changeforumlang_read_and_apply_xmls($selected_language)
+{
+    global $db, $lang;
+
+    $plugin_languages_dir = MYBB_ROOT . 'inc/plugins/pit_changeforumlang_languages/';
+    $selected_language_dir = $plugin_languages_dir . $selected_language . '/';
+
+    if (!is_dir($selected_language_dir)) {
+        // the directory is not exists...
+        return true;
     }
 
     $should_exists_file = array(
@@ -325,130 +586,37 @@ function pit_changeforumlang_preconfirm()
         "adminviews.xml" => array("filename" => "adminviews.xml", "isexist" => false, "isselected" => false),
     );
 
-    $selected_language = $mybb->get_input('selected_language', MyBB::INPUT_STRING);
-    $update_bblang = $mybb->get_input('update_bblang', MyBB::INPUT_STRING) == 'yes' ? true : false;
-    $plugin_languages_dir = MYBB_ROOT . 'inc/plugins/pit_changeforumlang_languages/';
-    $selected_language_dir = $plugin_languages_dir . $selected_language . '/';
-
-    if (!is_dir($selected_language_dir)) {
-        flash_message($lang->pit_changeforumlang_selected_lang_does_not_exist . htmlspecialchars_uni($selected_language), "error");
-        admin_redirect("index.php?module=config-pit-changeforumlang");
-        return false;
-    }
-
     $has_no_file = true;
-    // $some_file_is_missing = false;
     foreach ($should_exists_file as $filename => $item) {
-        if (is_file($selected_language_dir . $filename)) {
+        $filepath = $selected_language_dir . $filename;
+        if (is_file($filepath)) {
             $has_no_file = false;
             $should_exists_file[$filename]["isexist"] = true;
-            $should_exists_file[$filename]["path"] = $selected_language_dir . $filename;
-        } else {
-            // $some_file_is_missing = true;
+            $should_exists_file[$filename]["path"] = $filepath;
         }
     }
 
     if ($has_no_file) {
-        flash_message($lang->pit_changeforumlang_has_no_file . htmlspecialchars_uni($selected_language), "error");
-        admin_redirect("index.php?module=config-pit-changeforumlang");
-        return false;
+        // folder exists but have no required file...(xmls)
+        return true;
     }
 
-    $compatibility_msg = $lang->pit_changeforumlang_selected_may_not_compatible;
-    $langinfo_file_path = $plugin_languages_dir . $selected_language . '.php';
-    if (is_file($langinfo_file_path)) {
-        require $langinfo_file_path;
-        if ($mybb->version_code == $langinfo['version']) {
-            $compatibility_msg = $lang->pit_changeforumlang_selected_fully_compatible;
-        } else if ($mybb->version_code > $langinfo['version']) {
-            $compatibility_msg = $lang->pit_changeforumlang_selected_is_lower_version;
-        }
-    }
-
-    /* if ($some_file_is_missing == true) {
-        pit_changeforumlang_message($lang->pit_changeforumlang_some_file_does_not_exist, 'error');
-        $page->output_footer();
+    $languagepacks = $lang->get_languages();
+    if (!array_key_exists($selected_language, $languagepacks)) {
+        // the zipball not contain any standard and basic language pack!
+        pit_changeforumlang_message($lang->pit_changeforumlang_error_occurred, 'error');
         return false;
-    } */
+    }
 
 
     $db->delete_query('pit_changeforumlang_data');
     foreach ($should_exists_file as $filename => $item) {
-        if ($item['isexist'] == true) {
+        if ($item['isexist'] === true) {
             $data = pit_changeforumlang_xml_reader_controller($filename, $item['path']);
             if (isset($data->error)) {
                 pit_changeforumlang_message("{$lang->pit_changeforumlang_issue_on_read_xml}<br><b>{$filename}</b> <p>{$data['error']}</p>", 'error');
                 return false;
             }
-        }
-    }
-
-    pit_changeforumlang_message($lang->pit_changeforumlang_ready_to_apply, 'success');
-
-    $form = new Form("index.php?module=config-pit-changeforumlang&amp;action=save", "post");
-    echo $form->generate_hidden_field('selected_language', $selected_language);
-    echo $form->generate_hidden_field('update_bblang', $update_bblang);
-
-    echo "<p>{$compatibility_msg}</p>
-        <p>{$lang->pit_changeforumlang_check_file_status}...</p>
-        <ul>";
-
-    foreach ($should_exists_file as $filename => $item) {
-        $icon_url = $mybb->settings['bburl'] . '/admin/styles/default/images/icons/';
-        if ($item["isexist"]) $icon_url .= 'success.png';
-        else $icon_url .= 'error.png';
-
-        $checked = $item["isexist"] == true ? 'checked' : '';
-        $disabled = $item["isexist"] == true ? '' : 'disabled';
-        echo "<li style=\"list-style: none;\">
-                <label for=\"languagefiles_{$filename}\">
-                    <input type=\"checkbox\" name=\"languagefiles[]\" id=\"languagefiles_{$filename}\" value=\"{$filename}\" {$checked} {$disabled}>
-                    {$filename} <img src=\"{$icon_url}\">
-                </label>
-            </li>";
-    }
-    echo '</ul>';
-
-    update_admin_session('should_exists_file', $should_exists_file);
-
-    $buttons[] = $form->generate_submit_button($lang->pit_changeforumlang_apply);
-    $form->output_submit_wrapper($buttons);
-    $form->end();
-
-    $page->output_footer();
-}
-
-function pit_changeforumlang_save_settings()
-{
-    global $db, $mybb, $lang, $admin_session;
-
-    if ($mybb->request_method != "post") {
-        admin_redirect("index.php?module=config-pit-changeforumlang");
-        return false;
-    }
-
-    verify_post_check($mybb->get_input('my_post_key'));
-    $selected_language = $mybb->get_input('selected_language', MyBB::INPUT_STRING);
-    $update_bblang = $mybb->get_input('update_bblang', MyBB::INPUT_BOOL);
-    $selectedlanguagefiles = $mybb->get_input('languagefiles', MyBB::INPUT_ARRAY);
-    $languagepacks = $lang->get_languages();
-
-    $should_exists_file = '';
-    if (isset($admin_session['data']['should_exists_file']) && $admin_session['data']['should_exists_file']) {
-        $should_exists_file = $admin_session['data']['should_exists_file'];
-        update_admin_session('should_exists_file', ''); // better to use new general function for unset
-    }
-
-    if (!isset($should_exists_file) || !is_array($should_exists_file)) {
-        flash_message($lang->pit_changeforumlang_error_occurred, 'error');
-        admin_redirect("index.php?module=config-pit-changeforumlang");
-        return false;
-    }
-
-    foreach ($should_exists_file as $filename => $item) {
-        if ($item['isexist']) {
-            $isselected = in_array($filename, $selectedlanguagefiles);
-            $should_exists_file[$filename]['isselected'] = $isselected;
         }
     }
 
@@ -460,7 +628,7 @@ function pit_changeforumlang_save_settings()
         return false;
     }
 
-    if ($should_exists_file['settings.xml']['isselected']) {
+    if ($should_exists_file['settings.xml']['isexist'] === true) {
         $query2 = $db->query("SELECT name, COUNT(sid) FROM `mybb_settings` GROUP BY name HAVING COUNT(sid) > 1;");
         $count_result = $db->num_rows($query2);
         if ($count_result > 0) {
@@ -471,7 +639,7 @@ function pit_changeforumlang_save_settings()
     }
 
     foreach ($should_exists_file as $filename => $item) {
-        if ($item['isselected'] == true) {
+        if ($item['isexist'] === true) {
             $data = pit_changeforumlang_apply_controller($filename, $selected_language);
             if (is_array($data) && isset($data->error)) {
                 pit_changeforumlang_message($lang->pit_changeforumlang_error_occurred, 'error');
@@ -480,17 +648,155 @@ function pit_changeforumlang_save_settings()
         }
     }
 
-    $selected_language = isset($selected_language) ? $selected_language : 'english';
+    return true;
+}
 
-    $condition = $update_bblang ? "OR name = 'bblanguage'" : "";
-    $db->update_query('settings', array('value' => $db->escape_string($selected_language)), "name = 'cplanguage' {$condition}");
-    $lang->set_language($selected_language, "admin");
-    if ($update_bblang) $lang->set_language($selected_language, "user");
+function pit_changeforumlang_recommended()
+{
+    global $mybb, $lang, $page, $admin_session;
+
+    $form_data_language = $mybb->get_input('language', MyBB::INPUT_STRING);
+    $form_data_index = $mybb->get_input('index', MyBB::INPUT_STRING);
+
+    $mybb_acp_theme_list = json_encode(PITFileManager::get_dir_content(MYBB_ROOT . '/admin/styles/', true));
+
+    $page->extra_header .= '<script type="text/javascript" src="' . $mybb->settings['bburl'] . '/admin/jscripts/pit_changeforumlang/pit_changeforumlang.js"></script>' . "\n";
+    $page->extra_header .= "<script>
+        if (!lang) var lang = {};
+
+        lang.pit_cfl = {
+            'author': '{$lang->pit_changeforumlang_js_author}',
+            'inc_admin': '{$lang->pit_changeforumlang_js_inc_admin}',
+            'inc_setting': '{$lang->pit_changeforumlang_js_inc_setting}',
+            'inc_acp_theme': '{$lang->pit_changeforumlang_js_inc_acp_theme}',
+            'inc_install': '{$lang->pit_changeforumlang_js_inc_install}',
+            'action_install': '{$lang->pit_changeforumlang_js_action_install}',
+            'action_apply': '{$lang->pit_changeforumlang_js_action_apply}',
+            'action_dl_zip': '{$lang->pit_changeforumlang_js_action_dl_zip}',
+            'action_dl_mybbmod': '{$lang->pit_changeforumlang_js_action_dl_mybbmod}',
+            'action_docs': '{$lang->pit_changeforumlang_js_action_docs}',
+            'action_website': '{$lang->pit_changeforumlang_js_action_website}',
+            'action_issues': '{$lang->pit_changeforumlang_js_action_issues}',
+            'action_back': '{$lang->pit_changeforumlang_js_action_back}',
+            'action_next': '{$lang->pit_changeforumlang_js_action_next}',
+            'install_success': '{$lang->pit_changeforumlang_js_install_success}',
+            'install_installed': '{$lang->pit_changeforumlang_js_install_installed}',
+            'install_installed_no_act': '{$lang->pit_changeforumlang_js_install_installed_no_act}',
+            'install_error': '{$lang->pit_changeforumlang_js_install_error}',
+            'version_may_not_compatible': '{$lang->pit_changeforumlang_selected_may_not_compatible}',
+            'version_fully_compatible': '{$lang->pit_changeforumlang_selected_fully_compatible}',
+            'version_is_lower_version': '{$lang->pit_changeforumlang_selected_is_lower_version}',
+            'version_selected_version_no_info': '{$lang->pit_changeforumlang_selected_version_no_info}',
+            'install_rec': '{$lang->pit_changeforumlang_js_install_rec}',
+            'install_rec_forcefully': '{$lang->pit_changeforumlang_js_install_rec_forcefully}',
+            'install_rec_acp_theme': '{$lang->pit_changeforumlang_js_install_rec_acp_theme}',
+            'install_rec_theme': '{$lang->pit_changeforumlang_js_install_rec_theme}',
+            'install_rec_rtl_support': '{$lang->pit_changeforumlang_js_install_rec_rtl_support}',
+            'install_rec_installed': '{$lang->pit_changeforumlang_js_install_rec_installed}',
+            'install_rec_installed_is_active': '{$lang->pit_changeforumlang_js_install_rec_installed_is_active}',
+            'yes_confirm': '{$lang->yes}',
+	        'no_confirm': '{$lang->no}',
+        };
+        var pit_cfl_vars = {
+            'rootpath': '{$mybb->settings['bburl']}',
+            'current_version': '{$mybb->version_code}',
+            'current_language': '{$mybb->settings['cplanguage']}',
+            'cpstyle_images_url': '{$mybb->settings['bburl']}/admin/styles/{$mybb->settings['cpstyle']}/images',
+            'spinner_image': '{$mybb->settings['bburl']}/admin/styles/{$mybb->settings['cpstyle']}/images/spinner.gif',
+            'my_post_key': '{$mybb->post_code}',
+
+            'mybb_acp_theme_list': {$mybb_acp_theme_list},
+            'current_acp_theme': '{$mybb->settings['cpstyle']}',
+            'language': '{$form_data_language}',
+            'index': '{$form_data_index}',
+        };
+
+        window.addEventListener('DOMContentLoaded', function () {
+            pit_cfl_main_recommended()
+        });
+    </script>";
+
+    $page->add_breadcrumb_item($lang->pit_changeforumlang_pl_title, 'index.php?module=config-pit-changeforumlang');
+    $page->output_header($lang->pit_changeforumlang_pl_title);
+
+    $sub_tabs = array(
+        'pit-changeforumlang' => array(
+            'title'         => $lang->pit_changeforumlang_pl_title,
+            'description'   => $lang->pit_changeforumlang_pl_desc,
+            'link'          => 'index.php?module=config-pit-changeforumlang',
+        ),
+    );
+
+    $page->output_nav_tabs($sub_tabs, 'pit-changeforumlang');
+
+    if ($mybb->get_input('action') != 'recommended' || $form_data_language === '' || $form_data_index === '') {
+        admin_redirect("index.php?module=config-pit-changeforumlang");
+        return false;
+    }
+
+    echo '<div id="pit_cfl_content_header"></div>';
+    echo '<div id="pit_cfl_content"></div>';
+    echo '<div id="pit_cfl_content_footer"></div>';
+
+    $page->output_footer();
+}
+
+function pit_changeforumlang_install_theme()
+{
+    global $db, $mybb, $lang, $page;
+
+    $page->add_breadcrumb_item($lang->pit_changeforumlang_pl_title, 'index.php?module=config-pit-changeforumlang');
+    $page->output_header($lang->pit_changeforumlang_pl_title);
+
+    $sub_tabs = array(
+        'pit-changeforumlang' => array(
+            'title'         => $lang->pit_changeforumlang_pl_title,
+            'description'   => $lang->pit_changeforumlang_pl_desc,
+            'link'          => 'index.php?module=config-pit-changeforumlang',
+        ),
+    );
+
+    $page->output_nav_tabs($sub_tabs, 'pit-changeforumlang');
+
+    if ($mybb->get_input('action') != 'install-theme') {
+        admin_redirect("index.php?module=config-pit-changeforumlang");
+        return false;
+    }
+
+
+    verify_post_check($mybb->get_input('my_post_key'));
+    $form_data_language = $mybb->get_input('language', MyBB::INPUT_STRING);
+    $form_data_index = $mybb->get_input('index', MyBB::INPUT_INT);
+    $form_data_is_acp_theme = $mybb->get_input('is_acp_theme', MyBB::INPUT_BOOL);
+    $form_data_theme_name = $mybb->get_input('theme_name', MyBB::INPUT_STRING);
+    $form_data_is_exist = $mybb->get_input('is_exist', MyBB::INPUT_BOOL);
+    $form_data_mybb_mod_pid = $mybb->get_input('mybb_mod_pid', MyBB::INPUT_INT);
+    $form_data_zipball_url = $mybb->get_input('zipball_url', MyBB::INPUT_STRING);
+
+    // $form_data_is_exist === true, only apply language, because this should be exist by default or already installed.
+    // others should be download and install from github
+    if (!$form_data_is_exist) {
+        $zip = new GithubZipballManager($form_data_zipball_url);
+        $zip->get_and_extract();
+    }
+
+    if ($form_data_is_acp_theme) {
+        if (!is_dir(MYBB_ROOT . '/admin/styles/' . $form_data_theme_name . '/')) {
+            // somethings went wrong!
+            flash_message($lang->pit_changeforumlang_js_install_error, "error");
+            admin_redirect("index.php?module=config-pit-changeforumlang");
+            return false;
+        }
+
+        $db->update_query('settings', array('value' => $db->escape_string($form_data_theme_name)), "name = 'cpstyle'");
+    }
 
     rebuild_settings();
 
-    flash_message($lang->sprintf($lang->pit_changeforumlang_finish, htmlspecialchars_uni($languagepacks[$selected_language])), "success");
-    admin_redirect("index.php?module=config-pit-changeforumlang");
+    flash_message($lang->pit_changeforumlang_js_install_success, "success");
+    admin_redirect("index.php?module=config-pit-changeforumlang&action=recommended&language={$form_data_language}&index={$form_data_index}");
+
+    $page->output_footer();
 }
 
 function pit_changeforumlang_xml_reader_controller($filename, $file_path)
@@ -555,7 +861,7 @@ function pit_changeforumlang_settings_xml_reader($filename, $file_path)
             $setting_description = $setting_dom->getElementsByTagName('description')->item(0);
             $setting_optionscode = $setting_dom->getElementsByTagName('optionscode')->item(0);
             $setting_settingvalue = $setting_dom->getElementsByTagName('settingvalue')->item(0);
-            // $description = $setting_dom->item(0);
+
             $setting_data = array(
                 'identifier' => $setting_identifier ? $setting_identifier : '',
                 'name' => $setting_name ? $setting_name : '',
@@ -792,8 +1098,6 @@ function pit_changeforumlang_settings_apply($selected_language)
                 "gid = {$result['gid']}"
             );
         } else {
-            // $lang_manager->writeLanguageKey('setting_group_' . $result['name'], $result['title']);
-            // $lang_manager->writeLanguageKey('setting_group_' . $result['name'] . '_desc', $result['description']);
             $array_of_language_keys[$result['gid']] = array();
             $array_of_language_keys[$result['gid']]['___comment_header_setting_group_' . $result['name']] = $result['name'] . ' settings';
             $array_of_language_keys[$result['gid']]['setting_group_' . $result['name']] = $result['title'];

@@ -1,0 +1,36 @@
+{
+  "acp_theme_list": [
+    {
+      "is_default": true,
+      "title": "Default",
+      "name": "default",
+      "mybb_mod_pid": 0,
+      "mybb_userid": 1,
+      "mybb_username": "Chris Boulton",
+      "githubrepo": "",
+      "author": "MyBB",
+      "website": "https://mybb.com/",
+      "docs_link": "",
+      "common_issues_link": "",
+      "support_link": "",
+      "compatability": "18*",
+      "rtl": 0
+    },
+    {
+      "title": "MyBB ACP Default RTL",
+      "name": "parsanit_default_rtl",
+      "mybb_mod_pid": 1676,
+      "mybb_userid": 79079,
+      "mybb_username": "firstboy000",
+      "githubrepo": "https://github.com/ParsanIT/MyBB-ACP-Default-RTL",
+      "author": "firstboy000",
+      "website": "https://parsanit.ir/",
+      "docs_link": "",
+      "common_issues_link": "",
+      "support_link": "",
+      "compatability": "18*",
+      "rtl": 1
+    }
+  ],
+  "theme_list": []
+}
