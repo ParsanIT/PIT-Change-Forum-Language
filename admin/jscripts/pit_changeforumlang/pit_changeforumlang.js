@@ -9,8 +9,7 @@ const pit_cfl_icons = {
 };
 
 async function pit_cfl_get_languages_data(language, index) {
-  // read languages.json
-  const rootpath = pit_cfl_vars.rootpath; // location.href.slice(0, location.href.lastIndexOf("/admin/index.php"));
+  const rootpath = pit_cfl_vars.rootpath;
   if (!pit_cfl_languages) {
     const languages_url = rootpath + "/admin/jscripts/pit_changeforumlang/languages.json";
     pit_cfl_languages = await fetch(languages_url).then(response => response.json());
@@ -25,8 +24,7 @@ async function pit_cfl_get_languages_data(language, index) {
 }
 
 async function pit_cfl_get_themes_data(is_acp_theme, theme_name) {
-  // read languages.json
-  const rootpath = pit_cfl_vars.rootpath; // location.href.slice(0, location.href.lastIndexOf("/admin/index.php"));
+  const rootpath = pit_cfl_vars.rootpath;
   if (!pit_cfl_themes) {
     const themes_url = rootpath + "/admin/jscripts/pit_changeforumlang/themes.json";
     pit_cfl_themes = await fetch(themes_url).then(response => response.json());
@@ -48,10 +46,8 @@ async function pit_cfl_main() {
   const $pit_cfl_footer = document.getElementById("pit_cfl_content_footer");
   $pit_cfl_footer.innerHTML = "";
 
-  // read languages.json and initial pit_cfl_languages var;
   await pit_cfl_get_languages_data();
 
-  // show list of languages...
   let html_content = `<style>
     .languages_row { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; }
     .language-item { background: #fdfdfd; border: 1px solid #e3e3e3; border-radius: 0.5rem; margin-bottom: 15px; overflow: hidden; }
@@ -83,7 +79,7 @@ async function pit_cfl_main() {
 async function pit_cfl_show_language_packages(language) {
   const $pit_cfl = document.getElementById("pit_cfl_content");
   $pit_cfl.innerHTML = "";
-  const cpstyle_images_url = pit_cfl_vars.cpstyle_images_url; // location.href.slice(0, location.href.lastIndexOf("/admin/index.php"));
+  const cpstyle_images_url = pit_cfl_vars.cpstyle_images_url;
 
   let html_content = `<style>
     .packages_row { display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 1.5rem; }
@@ -121,7 +117,7 @@ async function pit_cfl_show_language_packages(language) {
             <span>${lang.pit_cfl.inc_setting || "The translation includes the settings"}</span><br>
 
           <img src="${cpstyle_images_url}/icons/${
-      package.includes.install_upgrade_translation ? `success.png` : `bullet_off.png` // not important
+      package.includes.install_upgrade_translation ? `success.png` : `bullet_off.png`
     }">
             <span>${lang.pit_cfl.inc_install || "The translation includes the install/upgrade"}</span><br>
               
@@ -159,20 +155,19 @@ async function pit_cfl_show_language_packages(language) {
 async function pit_cfl_install_language(language, index) {
   const package = pit_cfl_languages[language].packages[index];
   if (!package) return alert(lang.unknown_error);
-  const { spinner_image, my_post_key } = pit_cfl_vars; // location.href.slice(0, location.href.lastIndexOf("/admin/index.php"));
+  const { spinner_image, my_post_key } = pit_cfl_vars;
 
   let content = `<div id="pit_cfl_install_language_popup" style="width: 500px; padding: 25px 15px; text-align: center;">
     <img src="${spinner_image}" alt="loading"> ${loading_text}
   </div>`;
   $(content).modal();
 
-  const is_default = package.is_default; //package.mybb_mod_pid === 0;
+  const is_default = package.is_default;
 
   let latest_release = package.latest_release || {};
   if (!package.latest_release && !is_default) {
-    // prepare data
     const [github_owner, github_repo] = package.githubrepo.slice(19).split("/");
-    // find last release of repo and send to plugin back-end for do installation
+
     latest_release = await fetch(`https://api.github.com/repos/${github_owner}/${github_repo}/releases/latest`).then(
       response => response.json()
     );
@@ -325,7 +320,7 @@ async function pit_cfl_main_recommended() {
 }
 
 async function pit_cfl_install_theme(is_acp_theme, theme_name) {
-  const { spinner_image, my_post_key, mybb_acp_theme_list, language, index } = pit_cfl_vars; // location.href.slice(0, location.href.lastIndexOf("/admin/index.php"));
+  const { spinner_image, my_post_key, mybb_acp_theme_list, language, index } = pit_cfl_vars;
 
   const package = await pit_cfl_get_themes_data(is_acp_theme, theme_name);
   if (!package) return alert(lang.unknown_error);
@@ -335,14 +330,13 @@ async function pit_cfl_install_theme(is_acp_theme, theme_name) {
   </div>`;
   $(content).modal();
 
-  const is_default = package.is_default; //package.mybb_mod_pid === 0;
+  const is_default = package.is_default;
   const is_exist = is_default || mybb_acp_theme_list.includes(theme_name);
 
   let latest_release = package.latest_release || {};
   if (!package.latest_release && !is_default) {
-    // prepare data
     const [github_owner, github_repo] = package.githubrepo.slice(19).split("/");
-    // find last release of repo and send to plugin back-end for do installation
+
     latest_release = await fetch(`https://api.github.com/repos/${github_owner}/${github_repo}/releases/latest`).then(
       response => response.json()
     );
@@ -401,7 +395,7 @@ async function pit_cfl_install_theme(is_acp_theme, theme_name) {
 }
 
 async function pit_cfl_apply_theme(is_acp_theme, theme_name) {
-  const { spinner_image, my_post_key, mybb_acp_theme_list, current_acp_theme, language, index } = pit_cfl_vars; // location.href.slice(0, location.href.lastIndexOf("/admin/index.php"));
+  const { spinner_image, my_post_key, mybb_acp_theme_list, current_acp_theme, language, index } = pit_cfl_vars;
 
   const is_exist = mybb_acp_theme_list.includes(theme_name);
   if (!is_exist) return alert(lang.unknown_error);
@@ -430,7 +424,7 @@ async function pit_cfl_apply_theme(is_acp_theme, theme_name) {
 }
 
 async function check_compatibility(text, compatible_version) {
-  const { current_version, cpstyle_images_url } = pit_cfl_vars; // location.href.slice(0, location.href.lastIndexOf("/admin/index.php"));
+  const { current_version, cpstyle_images_url } = pit_cfl_vars;
 
   let compatibility_msg = `<img src="${cpstyle_images_url}/icons/warning.png"> ${lang.pit_cfl.version_selected_version_no_info}`;
 
