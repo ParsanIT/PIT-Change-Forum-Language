@@ -18,8 +18,11 @@ $l['pit_changeforumlang_error_occurred'] = "Unfortunately, there have been probl
 $l['pit_changeforumlang_found_self_duplicated'] = "Duplicate data has been entered into the database.";
 $l['pit_changeforumlang_found_settings_duplicated'] = 'Duplicate name is seen in the settings section, the process was stopped to prevent incorrect changes.';
 $l['pit_changeforumlang_finish'] = "The forum language has been successfully changed to {1}. You may need to refresh the page to see the changes.";
+$l['pit_changeforumlang_update_cplang'] = "Change Admin CP language";
+$l['pit_changeforumlang_update_cplang_desc'] = "Do you want the main language of the Admin CP for administrators to change to the selected language after completing the process?";
 $l['pit_changeforumlang_update_bblang'] = "Change forum language";
-$l['pit_changeforumlang_update_bblang_desc'] = "Do you want the main language of the forum for users to change to the selected language after completing the process?<br />The display language of the Admin Control Panel will change without exception.";
+$l['pit_changeforumlang_update_bblang_desc'] = "Do you want the main language of the forum for users to change to the selected language after completing the process?";
+$l['pit_changeforumlang_just_installed'] = "The forum language pack has been successfully installed.";
 
 $l['pit_changeforumlang_selected_may_not_compatible'] = "The selected package may not be fully compatible with your version of MyBB.";
 $l['pit_changeforumlang_selected_fully_compatible'] = "The selected package is fully compatible with your version of MyBB.";

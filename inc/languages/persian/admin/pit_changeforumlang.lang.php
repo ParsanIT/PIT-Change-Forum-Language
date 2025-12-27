@@ -18,8 +18,11 @@ $l['pit_changeforumlang_error_occurred'] = 'متاسفانه مشکلاتی رخ
 $l['pit_changeforumlang_found_self_duplicated'] = 'داده‌های تکراری وارد دیتابیس شده است.';
 $l['pit_changeforumlang_found_settings_duplicated'] = 'نام تکراری در بخش تنظیمات دیده می‌شود، بمنظور جلوگیری از تغییرات نادرست، فرآیند متوقف شد.';
 $l['pit_changeforumlang_finish'] = "زبان انجمن با موفقیت به {1} تغییر کرد. ممکن است مشاهده تغییرات نیاز به تازه‌سازی(رفرش) صفحه داشته باشد.";
+$l['pit_changeforumlang_update_cplang'] = "تغییر زبان کنترل‌پنل ادمین";
+$l['pit_changeforumlang_update_cplang_desc'] = "آیا میخواهید بعد از انجام فرآیند، زبان اصلی کنترل‌پنل ادمین برای ادمین‌ها هم به زبان انتخابی تغییر کند؟";
 $l['pit_changeforumlang_update_bblang'] = "تغییر زبان انجمن";
-$l['pit_changeforumlang_update_bblang_desc'] = "آیا میخواهید بعد از انجام فرآیند، زبان اصلی انجمن برای کاربران هم به زبان انتخابی تغییر کند؟<br />زبان نمایشی کنترل‌پنل مدیرکل بلا استثنا تغییر خواهد کرد.";
+$l['pit_changeforumlang_update_bblang_desc'] = "آیا میخواهید بعد از انجام فرآیند، زبان اصلی انجمن برای کاربران هم به زبان انتخابی تغییر کند؟";
+$l['pit_changeforumlang_just_installed'] = "بسته زبان انجمن با موفقیت نصب شد.";
 
 $l['pit_changeforumlang_selected_may_not_compatible'] = "بسته انتخابی با نسخه MyBB شما ممکن است کاملا سازگار نباشد.";
 $l['pit_changeforumlang_selected_fully_compatible'] = "بسته انتخابی با نسخه MyBB شما کاملا سازگار می‌باشد.";

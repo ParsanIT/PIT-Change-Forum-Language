@@ -157,8 +157,10 @@ async function pit_cfl_install_language(language, index) {
   if (!package) return alert(lang.unknown_error);
   const { spinner_image, my_post_key } = pit_cfl_vars;
 
-  let content = `<div id="pit_cfl_install_language_popup" style="width: 500px; padding: 25px 15px; text-align: center;">
-    <img src="${spinner_image}" alt="loading"> ${loading_text}
+  let content = `<div id="pit_cfl_install_language_popup_wrapper" style="width: 500px; padding: 25px 15px; text-align: center;">
+    <div id="pit_cfl_install_language_popup">
+      <img src="${spinner_image}" alt="loading"> ${loading_text}
+    </div>
   </div>`;
   $(content).modal();
 
@@ -194,6 +196,16 @@ async function pit_cfl_install_language(language, index) {
       <input type="hidden" name="mybb_mod_pid" value="${package.mybb_mod_pid}">
       <input type="hidden" name="zipball_url" value="${latest_release?.zipball_url || ""}">
       <div class="form_container" style="padding: 15px 7px;">
+        <div style="text-align: start;">
+          <label for="update_cplang">${lang.pit_cfl.q_update_cplang}</label>
+          <div class="description">${lang.pit_cfl.q_update_cplang_desc}</div>
+          <div class="form_row"><label for="update_cplang" class="label_radio_yes " style="float:none; display:inline-block;"><input type="radio" name="update_cplang" value="yes" class="radio_input radio_yes " id="update_cplang" checked="checked">${
+            lang.pit_cfl.yes_confirm
+          }</label> <label class="label_radio_no " style="float:none; display:inline-block;"><input type="radio" name="update_cplang" value="no" class="radio_input radio_no">${
+    lang.pit_cfl.no_confirm
+  }</label></div>
+        </div>
+        <hr>
         <div style="text-align: start;">
           <label for="update_bblang">${lang.pit_cfl.q_update_bblang}</label>
           <div class="description">${lang.pit_cfl.q_update_bblang_desc}</div>
@@ -325,8 +337,10 @@ async function pit_cfl_install_theme(is_acp_theme, theme_name) {
   const package = await pit_cfl_get_themes_data(is_acp_theme, theme_name);
   if (!package) return alert(lang.unknown_error);
 
-  let content = `<div id="pit_cfl_install_theme_popup" style="width: 500px; padding: 25px 15px; text-align: center;">
-    <img src="${spinner_image}" alt="loading"> ${loading_text}
+  let content = `<div id="pit_cfl_install_theme_popup_wrapper" style="width: 500px; padding: 25px 15px; text-align: center;">
+    <div id="pit_cfl_install_theme_popup">
+      <img src="${spinner_image}" alt="loading"> ${loading_text}
+    </div>
   </div>`;
   $(content).modal();
 

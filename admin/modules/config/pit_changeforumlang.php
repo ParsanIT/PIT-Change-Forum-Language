@@ -464,6 +464,8 @@ function pit_changeforumlang_select_language_pack()
             'version_fully_compatible': '{$lang->pit_changeforumlang_selected_fully_compatible}',
             'version_is_lower_version': '{$lang->pit_changeforumlang_selected_is_lower_version}',
             'version_selected_version_no_info': '{$lang->pit_changeforumlang_selected_version_no_info}',
+            'q_update_cplang': '{$lang->pit_changeforumlang_update_cplang}',
+            'q_update_cplang_desc': '{$lang->pit_changeforumlang_update_cplang_desc}',
             'q_update_bblang': '{$lang->pit_changeforumlang_update_bblang}',
             'q_update_bblang_desc': '{$lang->pit_changeforumlang_update_bblang_desc}',
             'yes_confirm': '{$lang->yes}',
@@ -533,6 +535,7 @@ function pit_changeforumlang_install_language_pack()
     $form_data_acp_theme = $mybb->get_input('acp_theme', MyBB::INPUT_STRING);
     $form_data_mybb_mod_pid = $mybb->get_input('mybb_mod_pid', MyBB::INPUT_INT);
     $form_data_zipball_url = $mybb->get_input('zipball_url', MyBB::INPUT_STRING);
+    $form_data_update_cplang = $mybb->get_input('update_cplang', MyBB::INPUT_STRING) == 'yes' ? true : false;
     $form_data_update_bblang = $mybb->get_input('update_bblang', MyBB::INPUT_STRING) == 'yes' ? true : false;
 
     // $form_data_is_exist === true, only apply language, because this should be exist by default
@@ -542,26 +545,40 @@ function pit_changeforumlang_install_language_pack()
         $zip->get_and_extract();
     }
 
-    if (isset($form_data_language) && pit_changeforumlang_read_and_apply_xmls($form_data_language) !== true) {
-        pit_changeforumlang_message($lang->pit_changeforumlang_error_occurred, 'error');
-        return false;
+    if ($form_data_update_cplang) {
+        if (isset($form_data_language) && pit_changeforumlang_read_and_apply_xmls($form_data_language) !== true) {
+            pit_changeforumlang_message($lang->pit_changeforumlang_error_occurred, 'error');
+            return false;
+        }
+
+        $form_data_language = isset($form_data_language) ? $form_data_language : 'english';
+
+        $db->update_query('settings', array('value' => $db->escape_string($form_data_language)), "name = 'cplanguage'");
+        $lang->set_language($form_data_language, "admin");
+
+        if (strlen($form_data_acp_theme) > 0 && $mybb->settings['cpstyle'] === 'default' && is_dir(MYBB_ROOT . '/admin/styles/' . $form_data_acp_theme . '/')) {
+            $db->update_query('settings', array('value' => $db->escape_string($form_data_acp_theme)), "name = 'cpstyle'");
+        }
     }
 
-    $form_data_language = isset($form_data_language) ? $form_data_language : 'english';
+    if ($form_data_update_bblang) {
+        $form_data_language = isset($form_data_language) ? $form_data_language : 'english';
 
-    $condition = $form_data_update_bblang ? "OR name = 'bblanguage'" : "";
-    $db->update_query('settings', array('value' => $db->escape_string($form_data_language)), "name = 'cplanguage' {$condition}");
-    $lang->set_language($form_data_language, "admin");
-
-    if (strlen($form_data_acp_theme) > 0 && $mybb->settings['cpstyle'] === 'default' && is_dir(MYBB_ROOT . '/admin/styles/' . $form_data_acp_theme . '/')) {
-        $db->update_query('settings', array('value' => $db->escape_string($form_data_acp_theme)), "name = 'cpstyle'");
+        $db->update_query('settings', array('value' => $db->escape_string($form_data_language)), "name = 'bblanguage'");
     }
 
-    rebuild_settings();
+    if ($form_data_update_cplang || $form_data_update_bblang) {
+        rebuild_settings();
+    }
 
     $languagepacks = $lang->get_languages();
 
-    flash_message($lang->sprintf($lang->pit_changeforumlang_finish, htmlspecialchars_uni($languagepacks[$form_data_language])), "success");
+    if ($form_data_update_cplang || $form_data_update_bblang) {
+        flash_message($lang->sprintf($lang->pit_changeforumlang_finish, htmlspecialchars_uni($languagepacks[$form_data_language])), "success");
+    } else {
+        flash_message($lang->pit_changeforumlang_just_installed, "success");
+    }
+    
     admin_redirect("index.php?module=config-pit-changeforumlang&action=recommended&language={$form_data_language}&index={$form_data_index}");
 
     $page->output_footer();

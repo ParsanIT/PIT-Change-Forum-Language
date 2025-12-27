@@ -38,8 +38,8 @@
         },
         "includes": {
           "settings_translation": true,
-          "install_upgrade_translation": false,
-          "acp_theme": ""
+          "install_upgrade_translation": true,
+          "acp_theme": "default"
         },
         "__comment_recommended": {
           "acp_theme": "if a theme has spcefic option for your language such as RTL, input required data of that here such as below"
