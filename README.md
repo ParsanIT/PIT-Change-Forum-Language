@@ -1,56 +1,153 @@
-Have you ever noticed after installing a language pack that some places are still not translated? Especially important places like settings...
-There are definitely developers and contributors who have translated the MyBB package separately into their own language, but translating parts like settings will be an installation and upgrade-dependent process.
+Read me in [![en](https://img.shields.io/badge/en-blue?style=flat)](https://github.com/ParsanIT/PIT-Change-Forum-Language/blob/main/README.md)
+[![fa](https://img.shields.io/badge/fa-blue?style=flat)](https://github.com/ParsanIT/PIT-Change-Forum-Language/blob/main/README.fa.md)
 
-Now, with this plugin, you can do this without having to upgrade or reinstall, and avoid unwanted changes to templates, etc. in the process.
+<h1>🧩 PIT Change Forum Language plugin for MyBB</h1>
 
-### Where is this plugin useful?
+<p>A plugin for managing and installing MyBB language packs that allows <b>full and automatic translation of all forum sections</b> without the need for reinstallation or upgrade.</p>
 
-0- Completing the `config_settings.lang.php` file based on `settings.xml`, which is automatically and accurately converted.
+<h2>Introduction</h2>
 
-1- When a client or you have already installed MyBB and you want to completely change its language.
+<p>In the current MyBB architecture, The text in some sections only applies when performing a <b>installation or upgrade</b> of the forum.<br><br>
+Because of this, parts of MyBB may remain in English even after installing a language pack. (Especially in language packs that did not follow the full and standard approach.)</p>
 
-2- When you want to completely and temporarily change the forum to another language for a trial or training version.
+<p>The <b>PIT Change Forum Language</b> plugin has completely removed this limitation.<br>
+With this plugin, all parts of MyBB — even those that were previously only translated during the installation or upgrade process — are fully translated <b>without the need for a reinstallation or upgrade</b>.</p>
 
-3- When you want to avoid language dependency to generate packages for different communities (like Iran, China, Russia, France, etc.) for each version and there is no need to fully customize MyBB with each version. With this plugin, after installation or upgrade, users only need to install it and apply the desired language. (Only once and then deactivate the plugin)
+<p>The plugin also recommends and installs the <b>appropriate skin</b> if needed to ensure complete harmony between the language and the user interface.</p>
 
-## How to create the necessary language files?
+<h2>Key Features</h2>
 
-Currently, the necessary language files are named `settings.xml`, `tasks.xml`, `usergroups.xml`, `adminviews.xml`, which are available in the `install` directory, and a php file that contain language pack info like MyBB language pack info files. This is to speed up and facilitate the work of various MyBB communities around the world. If you have them ready, you can include them in the plugin and use them easily. if you use standard method for translating settings and settinggroups, you do not need add `settings.xml` into the package.
-(The standard method is: add the translations of settings and settings groups one by one in `/inc/languages/{yourlang}/admin/config_settings.lang.php`)
-Don't have enough time and patience for this? Our plugin will help you use `settings.xml` translations with one click.( clean and beautiful ;) )
+<ul>
+  <li>🔄 Download and install language packs online</li>
+  <li>🧠 <b>Full translation coverage</b> for all parts of the forum, without the need for an installation or upgrade process</li>
+  <li>🧭 Suggest or install a suitable theme with the language pack installed.</li>
+  <li>⚙️ Setup and operation with just <b>click</b></li>
+  <li>🌐 No need to upload language pack files or do manual settings</li>
+</ul>
 
-## How to add a language:
+<h2>Installation steps</h2>
 
-In the `inc/plugins/pit_changeforumlang_languages` ​​directory, create a folder with your language code/name and place the translated xml files in it, and also create a language information file with the same language code/name in php format next to it. (According to the `persian` language template included in the package)
+<ol>
+  <li>Upload the plugin file to your MyBB root directory.</li>
+  <li>From the MyBB admin panel, go to the <b>Plugins</b> section and activate the plugin.</li>
+  <li>Go to the <b>Configuration &gt; Change PIT Community Language</b>.</li>
+  <li>Select your desired language and complete the installation by clicking.</li>
+</ol>
 
-For correct and logical functioning, the corresponding MyBB language pack must also be present in the forum so that you can see it for selection in the plugin. (It certainly does not make sense to have the settings section in Russian in a ACP with Chinese language -- however, we may change this if users request and need it.)
+<h2>Advantages</h2>
 
----
+<ul>
+  <li>Complete and flawless translation of all MyBB components</li>
+  <li>No need to reinstall or upgrade the forum to apply translations</li>
+  <li>Fast, convenient, and uncomplicated management experience</li>
+  <li>Simple and clean user interface.</li>
+</ul>
 
-آیا تا به حال بعد از نصب یک بسته زبانی متوجه شده‌اید که بعضی جاها هنوز ترجمه نشده‌اند؟ مخصوصاً جاهای مهم مانند تنظیمات...
-قطعاً توسعه‌دهندگان و مشارکت‌کنندگانی هستند که بسته MyBB را جداگانه به زبان خودشان ترجمه کرده‌اند، اما ترجمه بخش‌هایی مانند تنظیمات، فرآیندی وابسته به نصب و ارتقا خواهد بود.
+<h2>Add language</h2>
 
-حال، با استفاده از این افزونه، می‌توانید این کار را بدون نیاز به ارتقا یا نصب مجدد انجام دهید و از تغییرات ناخواسته قالب ها و... در این فرآیند جلوگیری کنید.
+<p>This depends on the activity of your community developers, they must prepare and provide us with their language packs according to the principles.<br>
+We will include it in the plugin as soon as possible and provide it to you in the form of an update.</p>
 
-### این افزونه کجا مفید است؟
+<h3>How to add by developers and translators:</h3>
 
-0- تکمیل فایل `config_settings.lang.php` بر اساس `settings.xml` که به طور خودکار و دقیق تبدیل انجام میشود.
+<ol>
+  <li>Prepare the initial language pack by adhering to a principled structure.</li>
+  <li>Add the required xml files in the specified structure in the path <code>/inc/plugins/pit_changeforumlang_languages</code><br>
+<pre>
+language_common_name/
+    |
+    |--- adminviews.xml
+    |--- settings.xml
+    |--- tasks.xml
+    |--- usergroups.xml<br>
+language_common_name.php
+</pre>
+  </li>
+  <li>Create a GitHub repository for the relevant language pack as Public.</li>
+  <li>Create a Release for the first time or every update.
+    <ul>
+      <li>To identify compatibility before installation, enter <code>Compatibility: xxxx</code> in its description. (Not mandatory)</li>
+    </ul>
+  </li>
+  <li>Submit a request for inclusion in the project by preparing the following JSON and submitting it to the issues section of this project.</li>
+</ol>
 
-1- وقتی مشتری یا شما MyBB را از قبل نصب کرده‌اید و می‌خواهید زبان آن را کاملا تغییر دهید.
+<pre>
+{
+  "english": {
+    "data": {
+      "__comment_rtl": "Sets if the language is RTL (Right to Left) (1: yes, 0: no)",
+      "__comment_htmllang": "Sets the lang in the &lt;html&gt; on all pages",
+      "__comment_charset": "Sets the character set, blank uses the default.",
+      "__comment_icon_code": "use https://flagicons.lipis.dev/",
+      "__comment_common_name": "equal with folder name",
+      "name": "English",
+      "rtl": 0,
+      "htmllang": "en",
+      "charset": "UTF-8",
+      "icon_code": "gb",
+      "common_name": "english"
+    },
+    "packages": [
+      {
+        "__comment_seperator_0": "PIT Change forum languages data(difference with language pack base data)",
 
-2- وقتی می‌خواهید انجمن را برای نسخه آزمایشی یا آموزشی به طور کامل و موقت به زبان دیگری تغییر دهید.
+        "__comment_is_default": "is default language pack in that exist in mybb package... other language pack can't be default...",
+        "__comment_mybb_mod_pid": "can find from url of that like https://community.mybb.com/mods.php?action=view&pid=1675",
+        "__comment_mybb_mod_codename": "can find from details of that project(in edit page)",
+        "__comment_mybb_userid": "can find from url of user profile like https://community.mybb.com/user-79079.html",
+        "is_default": true,
+        "mybb_mod_pid": 0,
+        "mybb_mod_codename": "english",
+        "mybb_userid": 1,
+        "mybb_username": "Chris Boulton",
 
-3- وقتی می‌خواهید از وابستگی زبان برای تولید بسته برای جوامع مختلف (مانند ایران، چین، روسیه، فرانسه و غیره) برای هر نسخه جلوگیری کنید و نیازی به سفارشی‌سازی کامل MyBB با هر نسخه نیست. با استفاده از این افزونه، پس از نصب یا ارتقا، فقط باید کاربران آن را نصب و زبان مورد نظر را اعمال کنند.(فقط یکبار و بعد از آن پلاگین را غیرفعال کنند)
+        "__comment_githubrepo": "github repo base link (for browse) like: https://github.com/ParsanIT/MyBB-Persian-Language-Pack",
+        "__comment_githubrepo_release_zipball": "github repo suggestion release asset like: https://github.com/ParsanIT/MyBB-Persian-Language-Pack/archive/refs/tags/1839.zip",
+        "__comment_githubrepo_release_version": "github repo suggestion release 1.8.39",
 
-## چگونه فایل های زبانی لازم را ایجاد کنیم؟
+        "__comment_includes": {
+          "settings_translation": "Inserted setting language strings into standard method(inc/languages/{common_name}/admin/settings.php), true or false",
+          "install_upgrade_translation": "Install and upgrade is translated in this languagepack?  true or false",
+          "acp_theme": "if package contain acp theme, input name of that(same as that folder) here"
+        },
+        "includes": {
+          "settings_translation": true,
+          "install_upgrade_translation": false,
+          "acp_theme": ""
+        },
+        "__comment_recommended": {
+          "acp_theme": "if a theme has spcefic option for your language such as RTL, input required data of that here such as below"
+        },
+        "recommended": {
+          "acp_theme": {
+            "forcefully": true,
+            "name": "default"
+          }
+        },
 
-در حال حاضر فایل‌های زبانی لازم با نام‌های `settings.xml` ، `tasks.xml` ، `usergroups.xml`، `adminviews.xml` هستند که در دایرکتوری `install` موجود هستند، و یک فایل php که حاوی اطلاعات بسته زبان مانند فایل‌های اطلاعات بسته زبان MyBB است. اینکار به منظور سرعت بخشیدن و راحتی جوامع مختلف MyBB در سراسر دنیا می‌باشد. اگر آنها را آماده دارید میتوانید در پلاگین بگنجانید و به راحتی استفاده کنید.
-اگر از روش استاندارد برای ترجمه تنظیمات و گروه‌های تنظیمات استفاده می‌کنید، نیازی به اضافه کردن `settings.xml` به بسته ندارید. (روش استاندارد این است: ترجمه‌های تنظیمات و گروه‌های تنظیمات را یکی یکی در `/inc/languages/{yourlang}/admin/config_settings.lang.php` اضافه کنید)
+        "__comment_seperator_1": "Language pack data",
 
-آیا وقت و حوصله کافی برای این کار را ندارید؟ فزونه ما به شما کمک می‌کند تا با یک کلیک از ترجمه `settings.xml` استفاده کنید. ( تمیز و قشنگ ;) )
+        "__comment_name": "The friendly name of the language",
+        "__comment_author": "The author of the language",
+        "__comment_website": "The language authors website",
+        "__comment_docs_link": "The documentation site link",
+        "__comment_common_issues_link": "The documentation FAQs site link",
+        "__comment_support_link": "The support website link",
+        "__comment_version": "Compatible version of MyBB",
+        "__comment_admin": "Sets if the translation includes the Admin CP (1: yes, 0: no)",
 
-## نحوه اضافه کردن زبان:
-
-در دایرکتوری `inc/plugins/pit_changeforumlang_languages`، پوشه‌ای با کد/نام زبان خود ایجاد کنید و فایل‌های xml ترجمه شده را در آن قرار دهید و همچنین در کنار آن فایل اطلاعات زبانی به همان کد/نام زبان به فرمت php ایجاد کنید.(مطابق الگو زبان `persian` موجود در بسته)
-
-برای عملکرد صحیح و منطقی، بسته زبان MyBB متناظر با آن‌هم باید در انجمن موجود باشد تا بتوانید آن را برای انتخاب در افزونه مشاهده کنید. (مطمئناً منطقی نیست که بخش تنظیمات به زبان روسی در یک ACP با زبان چینی باشد -- با این حال، در صورت درخواست و نیاز کاربران، ممکن است این را تغییر دهیم.)
+        "name": "English (American)",
+        "author": "MyBB",
+        "website": "https://mybb.com/",
+        "docs_link": "",
+        "common_issues_link": "",
+        "support_link": "",
+        "version": "1839",
+        "admin": 1,
+        "icon_codus"
+      }
+    ]
+  }
+};
+</pre>
