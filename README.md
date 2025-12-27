@@ -1,5 +1,5 @@
-Read me in [![en](https://img.shields.io/badge/en-blue?style=flat)](https://github.com/ParsanIT/PIT-Change-Forum-Language/blob/main/README.md)
-[![fa](https://img.shields.io/badge/fa-blue?style=flat)](https://github.com/ParsanIT/PIT-Change-Forum-Language/blob/main/README.fa.md)
+Read me in ![EN](https://img.shields.io/badge/EN-green?style=flat)
+[![FA](https://img.shields.io/badge/FA-blue?style=flat)](https://github.com/ParsanIT/PIT-Change-Forum-Language/blob/main/README.fa.md)
 
 <h1>🧩 PIT Change Forum Language plugin for MyBB</h1>
 
@@ -18,11 +18,11 @@ With this plugin, all parts of MyBB — even those that were previously only tra
 <h2>Key Features</h2>
 
 <ul>
-  <li>🔄 Download and install language packs online</li>
-  <li>🧠 <b>Full translation coverage</b> for all parts of the forum, without the need for an installation or upgrade process</li>
-  <li>🧭 Suggest or install a suitable theme with the language pack installed.</li>
-  <li>⚙️ Setup and operation with just <b>click</b></li>
-  <li>🌐 No need to upload language pack files or do manual settings</li>
+  <li>🌐 Download and install language packs online</li>
+  <li>🔄 <b>Full translation coverage</b> for all parts of the forum, without the need for an installation or upgrade process</li>
+  <li>🧠 Suggest or install a suitable theme with the language pack installed.</li>
+  <li>🖱 Setup and operation with just <b>click</b></li>
+  <li>🤖 No need to upload language pack files or do manual settings</li>
 </ul>
 
 <h2>Installation steps</h2>
