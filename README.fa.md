@@ -1,5 +1,5 @@
 Read me in [![EN](https://img.shields.io/badge/EN-blue?style=flat)](https://github.com/ParsanIT/PIT-Change-Forum-Language/blob/main/README.md)
-![FA](https://img.shields.io/badge/FA-green?style=flat)
+[![FA](https://img.shields.io/badge/FA-green?style=flat)](#)
 
 <h1 dir="rtl">🧩 افزونه PIT Change Forum Language برای MyBB</h1>
 

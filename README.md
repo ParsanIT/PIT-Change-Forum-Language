@@ -1,4 +1,4 @@
-Read me in ![EN](https://img.shields.io/badge/EN-green?style=flat)
+Read me in [![EN](https://img.shields.io/badge/EN-green?style=flat)](#)
 [![FA](https://img.shields.io/badge/FA-blue?style=flat)](https://github.com/ParsanIT/PIT-Change-Forum-Language/blob/main/README.fa.md)
 
 <h1>🧩 PIT Change Forum Language plugin for MyBB</h1>
