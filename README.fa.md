@@ -150,3 +150,10 @@ language_common_name.php
   }
 };
 </pre>
+
+<h2 dir="rtl">فهرست بسته‌های زبانی موجود</h2>
+
+<ul dir="rtl">
+  <li>English (American) (Default)</li>
+  <li>Persian (پارسی)</li>
+</ul>

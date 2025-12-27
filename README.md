@@ -151,3 +151,10 @@ language_common_name.php
   }
 };
 </pre>
+
+<h2>List of available language packs</h2>
+
+<ul>
+  <li>English (American) (Default)</li>
+  <li>Persian (پارسی)</li>
+</ul>
