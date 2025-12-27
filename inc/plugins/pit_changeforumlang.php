@@ -3,7 +3,7 @@
 /**
  * Plugin: PIT Change Forum Language
  * Description: Change the language of various sections that require changes to the database, without having to perform an upgrade or reinstallation process.
- * Version: 1.0
+ * Version: 2.0
  * Author: firstboy000
  * Author Web: https://ParsanIT.ir
  * License: GPL v3

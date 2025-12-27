@@ -440,7 +440,7 @@ function pit_changeforumlang_select_language_pack()
     global $mybb, $lang, $page;
 
     $page->extra_header .= '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />' . "\n";
-    $page->extra_header .= '<script type="text/javascript" src="' . $mybb->settings['bburl'] . '/admin/jscripts/pit_changeforumlang/pit_changeforumlang.js"></script>' . "\n";
+    $page->extra_header .= '<script type="text/javascript" src="' . $mybb->settings['bburl'] . '/admin/jscripts/pit_changeforumlang/pit_changeforumlang.js?ver=200"></script>' . "\n";
     $page->extra_header .= "<script>
         if (!lang) var lang = {};
 
@@ -677,7 +677,7 @@ function pit_changeforumlang_recommended()
 
     $mybb_acp_theme_list = json_encode(PITFileManager::get_dir_content(MYBB_ROOT . '/admin/styles/', true));
 
-    $page->extra_header .= '<script type="text/javascript" src="' . $mybb->settings['bburl'] . '/admin/jscripts/pit_changeforumlang/pit_changeforumlang.js"></script>' . "\n";
+    $page->extra_header .= '<script type="text/javascript" src="' . $mybb->settings['bburl'] . '/admin/jscripts/pit_changeforumlang/pit_changeforumlang.js?v=200"></script>' . "\n";
     $page->extra_header .= "<script>
         if (!lang) var lang = {};
 
